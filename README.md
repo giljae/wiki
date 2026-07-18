@@ -59,9 +59,13 @@ http://localhost:8000/wiki/ 에서 확인합니다.
 
 ## GitHub Pages 설정
 
-1. GitHub 저장소 → **Settings** → **Pages**
-2. **Build and deployment** → Source를 **GitHub Actions**로 설정
-3. `main` 브랜치에 push하면 `.github/workflows/deploy.yml`이 자동 실행됩니다
+> **최초 1회 필수:** 아래 설정을 하지 않으면 배포 워크플로가 실패합니다.
+
+1. https://github.com/giljae/wiki/settings/pages
+2. **Build and deployment** → **Source**를 **GitHub Actions**로 변경
+3. 저장 후 Actions 탭에서 실패한 워크플로를 **Re-run** 하거나, 빈 커밋을 push합니다
+
+`main` 브랜치에 push하면 `.github/workflows/deploy.yml`이 자동 실행됩니다.
 
 ## 커스터마이징
 
