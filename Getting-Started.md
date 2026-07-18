@@ -21,7 +21,18 @@
 | `Getting-Started.md` | `/wiki/Getting-Started/` |
 | `notes/About.md` | `/wiki/notes/About/` |
 
-페이지 상단에 현재 경로가 표시됩니다. `.html` 없이 깔끔한 URL을 사용합니다.
+페이지 상단 **breadcrumb**(Home / notes / About)에서 각 단계를 클릭해 이동할 수 있습니다.
+
+## 편집하기
+
+- **읽기 | 편집 | 역사** 탭 — Wikipedia 스타일
+- **편집** → GitHub에서 해당 `.md` 파일 수정
+- **역사** → 커밋 기록 확인
+- 로컬: `docker compose up` (Gollum 웹 UI)
+
+## 사이드바
+
+왼쪽 **문서 목록**은 폴더 구조대로 계층 표시됩니다. `_Sidebar.md`로 바로가기 링크를 추가할 수 있습니다.
 
 ## Gollum 문법
 
@@ -52,6 +63,4 @@ docker compose up
 
 Markdown 파일을 직접 수정한 뒤 Git에 커밋하면 GitHub Actions가 자동으로 사이트를 배포합니다.
 
-## 사이드바
-
-`_Sidebar.md` 파일을 수정하면 모든 페이지에 표시되는 사이드바를 변경할 수 있습니다.
+## Gollum 문법

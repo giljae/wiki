@@ -12,6 +12,8 @@ ROOT = File.expand_path('..', __dir__)
 OUTPUT = File.join(ROOT, '_site')
 BASE_PATH = ENV.fetch('BASE_PATH', '/wiki').chomp('/')
 SITE_URL = ENV.fetch('SITE_URL', 'https://giljae.github.io')
+GITHUB_REPO = ENV.fetch('GITHUB_REPO', 'giljae/wiki')
+GITHUB_BRANCH = ENV.fetch('GITHUB_BRANCH', 'main')
 LAYOUT = File.join(ROOT, '_Layout.html')
 SITE_NAME = "Giljae's Digital Garden"
 SITE_DESCRIPTION = "#{SITE_NAME} — Gollum 기반 개인 위키"
@@ -47,8 +49,16 @@ def output_path(page)
   end
 end
 
-def clean_url_path(page)
-  static_href(page_slug(page))
+def github_file_path(page)
+  page.path
+end
+
+def github_edit_url(page)
+  "https://github.com/#{GITHUB_REPO}/edit/#{GITHUB_BRANCH}/#{github_file_path(page)}"
+end
+
+def github_history_url(page)
+  "https://github.com/#{GITHUB_REPO}/commits/#{GITHUB_BRANCH}/#{github_file_path(page)}"
 end
 
 def page_link?(path)
@@ -87,17 +97,101 @@ def page_description(page, html)
   text.length > 160 ? "#{text[0, 157]}..." : text
 end
 
-def render_page(page, sidebar_html, footer_html)
-  content = rewrite_links(page.formatted_data)
+def extract_toc_and_content(html)
+  doc = Nokogiri::HTML.fragment(html)
+  toc = doc.at_css('.toc')
+  toc_html = toc ? toc.to_html : nil
+  toc&.remove
+  [doc.to_html, toc_html]
+end
+
+def build_breadcrumbs(slug, pages_by_slug)
+  if slug == 'Home'
+    return [{ label: 'Home', url: nil }]
+  end
+
+  crumbs = [{ label: 'Home', url: static_href('Home') }]
+
+  parts = slug.split('/')
+  parts.each_with_index do |_part, i|
+    path_so_far = parts[0..i].join('/')
+    page = pages_by_slug[path_so_far]
+    label = page ? page.title : parts[i]
+    url = (i == parts.length - 1) ? nil : static_href(path_so_far)
+    crumbs << { label: label, url: url }
+  end
+  crumbs
+end
+
+def build_nav_tree(pages)
+  root = {}
+  pages.each do |page|
+    slug = page_slug(page)
+    parts = slug.split('/')
+    node = root
+    parts.each_with_index do |part, idx|
+      node[part] ||= { 'children' => {}, 'page' => nil }
+      node[part]['page'] = page if idx == parts.length - 1
+      node = node[part]['children']
+    end
+  end
+  root
+end
+
+def nav_page_title(node, key)
+  node['page'] ? node['page'].title : key
+end
+
+def render_nav_tree(nodes, parent_slug = '')
+  return '' if nodes.empty?
+
+  items = nodes.sort_by { |key, _| key == 'Home' ? '' : key.downcase }.map do |key, node|
+    full_slug = parent_slug.empty? ? key : "#{parent_slug}/#{key}"
+    title = CGI.escapeHTML(nav_page_title(node, key))
+    has_children = !node['children'].empty?
+
+    if node['page']
+      link = %(<a href="#{static_href(full_slug)}" data-slug="#{full_slug}">#{title}</a>)
+    else
+      link = %(<span class="nav-folder-label" data-slug="#{full_slug}">#{title}</span>)
+    end
+
+    child_html = has_children ? render_nav_tree(node['children'], full_slug) : ''
+    %(<li class="nav-item#{has_children ? ' nav-has-children' : ''}" data-slug="#{full_slug}">#{link}#{child_html}</li>)
+  end
+
+  %(<ul class="nav-tree">#{items.join}</ul>)
+end
+
+def build_sidebar_html(wiki, pages)
+  manual = wiki.page('_Sidebar')&.formatted_data
+  tree = build_nav_tree(pages)
+  tree_html = render_nav_tree(tree)
+
+  parts = []
+  parts << rewrite_links(manual) if manual
+  parts << %(<div class="nav-section"><p class="nav-heading">문서 목록</p>#{tree_html}</div>)
+  parts.join
+end
+
+def render_page(page, sidebar_html, footer_html, pages_by_slug)
+  raw_html = page.formatted_data
+  content, toc_html = extract_toc_and_content(raw_html)
+  content = rewrite_links(content)
+
   sidebar = sidebar_html
   footer = footer_html ? rewrite_links(footer_html) : nil
 
+  slug = page_slug(page)
   site_description = SITE_DESCRIPTION
   meta_description = page_description(page, content)
-  canonical = canonical_url(page_slug(page))
+  canonical = canonical_url(slug)
   site_name = SITE_NAME
-  slug = page_slug(page)
-  clean_url_path = static_href(slug)
+  breadcrumbs = build_breadcrumbs(slug, pages_by_slug)
+  edit_url = github_edit_url(page)
+  history_url = github_history_url(page)
+  current_slug = slug
+  toc_sidebar = toc_html
 
   template = ERB.new(File.read(LAYOUT))
   template.result(binding)
@@ -151,25 +245,6 @@ def build_robots
   ROBOTS
 end
 
-def build_sidebar_html(wiki, pages)
-  manual = wiki.page('_Sidebar')&.formatted_data
-  return nil unless manual
-
-  nav_pages = pages
-    .sort_by { |p| page_slug(p).downcase }
-    .map do |page|
-      slug = page_slug(page)
-      %(<li><a href="#{static_href(slug)}">#{CGI.escapeHTML(page.title)}</a></li>)
-    end
-
-  auto_nav = <<~HTML
-    <p><strong>All Pages</strong></p>
-    <ul>#{nav_pages.join}</ul>
-  HTML
-
-  "#{rewrite_links(manual)}#{auto_nav}"
-end
-
 FileUtils.rm_rf(OUTPUT)
 FileUtils.mkdir_p(OUTPUT)
 
@@ -178,19 +253,19 @@ footer_page = wiki.page('_Footer')
 footer_html = footer_page&.formatted_data
 
 pages = wiki.pages.reject(&:sub_page).reject { |p| SKIP_PAGES.include?(page_slug(p)) }
+pages_by_slug = pages.to_h { |p| [page_slug(p), p] }
 sidebar_html = build_sidebar_html(wiki, pages)
 
 pages.each do |page|
   dest = output_path(page)
   FileUtils.mkdir_p(File.dirname(dest))
-  File.write(dest, render_page(page, sidebar_html, footer_html))
+  File.write(dest, render_page(page, sidebar_html, footer_html, pages_by_slug))
   puts "  #{page.url_path} -> #{dest.sub(ROOT + '/', '')}"
 end
 
-# 404 page
 error_page = wiki.page('404')
 if error_page
-  File.write(File.join(OUTPUT, '404.html'), render_page(error_page, sidebar_html, footer_html))
+  File.write(File.join(OUTPUT, '404.html'), render_page(error_page, sidebar_html, footer_html, pages_by_slug))
   puts '  404.md -> 404.html'
 end
 

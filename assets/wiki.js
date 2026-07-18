@@ -192,9 +192,62 @@
     });
   }
 
+  // ── Nav highlight & tree ───────────────────────────────
+  function initNav() {
+    const slug = config.currentSlug;
+    if (!slug) return;
+
+    document.querySelectorAll('.nav-tree a[data-slug]').forEach((link) => {
+      const itemSlug = link.dataset.slug;
+      const li = link.closest('.nav-item');
+      if (itemSlug === slug) {
+        li?.classList.add('nav-current');
+      }
+      if (slug.startsWith(itemSlug + '/')) {
+        li?.classList.add('nav-ancestor');
+        let parent = li?.parentElement?.closest('.nav-item');
+        while (parent) {
+          parent.classList.add('nav-open', 'nav-ancestor');
+          parent = parent.parentElement?.closest('.nav-item');
+        }
+      }
+    });
+  }
+
+  // ── Auto TOC (when [[_TOC_]] not used) ────────────────
+  function initAutoToc() {
+    const panel = document.getElementById('wiki-toc-panel');
+    if (!panel || panel.querySelector('.toc:not(.toc-auto)')) return;
+
+    const article = document.querySelector('.article-body');
+    const autoToc = panel.querySelector('.toc-auto');
+    const list = document.getElementById('wiki-auto-toc');
+    if (!article || !autoToc || !list) return;
+
+    const headings = article.querySelectorAll('h2, h3');
+    if (!headings.length) return;
+
+    headings.forEach((h) => {
+      const anchor = h.querySelector('.anchor');
+      const id = anchor?.getAttribute('href')?.slice(1) || h.id;
+      if (!id) return;
+      const li = document.createElement('li');
+      if (h.tagName === 'H3') li.style.paddingLeft = '0.75rem';
+      const a = document.createElement('a');
+      a.href = '#' + id;
+      a.textContent = h.textContent.replace(/^#\s*/, '').trim();
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    autoToc.hidden = false;
+  }
+
   // ── Boot ───────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
+    initNav();
+    initAutoToc();
     initCodeCopy();
     await loadSearchIndex();
     initSearch();
