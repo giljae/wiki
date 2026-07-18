@@ -1,35 +1,35 @@
 :root,
 [data-theme="light"] {
-  --bg: #eeede8;
+  --bg: #fbfcf6;
   --bg-elevated: #ffffff;
-  --bg-subtle: #f6f5f1;
-  --surface: rgba(255, 255, 255, 0.82);
-  --text: #141416;
-  --text-secondary: #45454c;
-  --text-muted: #76767f;
-  --border: rgba(20, 20, 22, 0.08);
-  --border-subtle: rgba(20, 20, 22, 0.05);
-  --accent: #3f6b58;
-  --accent-hover: #2f5344;
-  --accent-soft: rgba(63, 107, 88, 0.1);
-  --accent-muted: #6b8f7c;
-  --accent-glow: rgba(63, 107, 88, 0.14);
-  --link: #3d5f78;
-  --link-hover: #2a4558;
+  --bg-subtle: #f3f4ed;
+  --surface: #ffffff;
+  --text: #000000;
+  --text-secondary: #222222;
+  --text-muted: #666666;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --accent: #ee8232;
+  --accent-hover: #d66f24;
+  --accent-soft: rgba(238, 130, 50, 0.14);
+  --accent-muted: #ee8232;
+  --accent-glow: rgba(238, 130, 50, 0.08);
+  --link: #000000;
+  --link-hover: #ee8232;
   --sidebar-bg: transparent;
-  --code-bg: #f0efea;
-  --header-bg: rgba(238, 237, 232, 0.78);
-  --shadow-sm: 0 1px 2px rgba(20, 20, 22, 0.04), 0 1px 1px rgba(20, 20, 22, 0.02);
-  --shadow-md: 0 8px 28px rgba(20, 20, 22, 0.07), 0 2px 8px rgba(20, 20, 22, 0.04);
-  --shadow-lg: 0 18px 48px rgba(20, 20, 22, 0.09), 0 4px 14px rgba(20, 20, 22, 0.04);
-  --search-bg: rgba(255, 255, 255, 0.9);
-  --toc-bg: #f8f7f4;
-  --note-bg: #f2f7f4;
-  --note-border: rgba(63, 107, 88, 0.22);
-  --warn-bg: #faf6ef;
-  --warn-border: rgba(180, 140, 70, 0.28);
-  --danger: #b85c5c;
-  --selection: rgba(63, 107, 88, 0.16);
+  --code-bg: #f0f1ea;
+  --header-bg: rgba(251, 252, 246, 0.92);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+  --search-bg: #ffffff;
+  --toc-bg: #f3f4ed;
+  --note-bg: #fff8f0;
+  --note-border: rgba(238, 130, 50, 0.35);
+  --warn-bg: #fff8e8;
+  --warn-border: rgba(228, 183, 61, 0.45);
+  --danger: #cf2e2e;
+  --selection: #ee8232;
   --font-body: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: "Pretendard Variable", "SF Mono", "Fira Code", Consolas, monospace;
   --radius-sm: 8px;
@@ -40,39 +40,43 @@
   --nav-width: clamp(11rem, 16vw, 16rem);
   --toc-width: clamp(11rem, 14vw, 14rem);
   --content-pad: clamp(1rem, 2.5vw, 2rem);
+  --link-marker: #000000;
+  --link-marker-hover: #ee8232;
 }
 
 [data-theme="dark"] {
-  --bg: #0c0c0e;
-  --bg-elevated: #16161a;
-  --bg-subtle: #1c1c21;
-  --surface: rgba(22, 22, 26, 0.88);
-  --text: #ededf0;
-  --text-secondary: #b8b8c0;
-  --text-muted: #7d7d88;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --accent: #8fbaa8;
-  --accent-hover: #b0d0c2;
-  --accent-soft: rgba(143, 186, 168, 0.12);
-  --accent-muted: #6d9584;
-  --accent-glow: rgba(143, 186, 168, 0.1);
-  --link: #8eb4cc;
-  --link-hover: #b0cee0;
+  --bg: #0a0a0a;
+  --bg-elevated: #141414;
+  --bg-subtle: #1a1a1a;
+  --surface: #141414;
+  --text: #f5f5f5;
+  --text-secondary: #d0d0d0;
+  --text-muted: #888888;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --accent: #ee8232;
+  --accent-hover: #f59a52;
+  --accent-soft: rgba(238, 130, 50, 0.16);
+  --accent-muted: #ee8232;
+  --accent-glow: rgba(238, 130, 50, 0.1);
+  --link: #f5f5f5;
+  --link-hover: #ee8232;
   --sidebar-bg: transparent;
-  --code-bg: #1e1e24;
-  --header-bg: rgba(12, 12, 14, 0.82);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --shadow-md: 0 10px 32px rgba(0, 0, 0, 0.38);
-  --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.45);
-  --search-bg: rgba(22, 22, 26, 0.95);
-  --toc-bg: #18181d;
-  --note-bg: #141a17;
-  --note-border: rgba(143, 186, 168, 0.2);
-  --warn-bg: #1a1814;
-  --warn-border: rgba(200, 160, 90, 0.22);
-  --danger: #d48484;
-  --selection: rgba(143, 186, 168, 0.22);
+  --code-bg: #1e1e1e;
+  --header-bg: rgba(10, 10, 10, 0.9);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.5);
+  --search-bg: #1a1a1a;
+  --toc-bg: #1a1a1a;
+  --note-bg: #1f1812;
+  --note-border: rgba(238, 130, 50, 0.3);
+  --warn-bg: #1f1a10;
+  --warn-border: rgba(228, 183, 61, 0.3);
+  --danger: #f07070;
+  --selection: #ee8232;
+  --link-marker: #d0d0d0;
+  --link-marker-hover: #ee8232;
 }
 
 * { box-sizing: border-box; }
@@ -81,7 +85,7 @@ html { scroll-behavior: smooth; }
 
 ::selection {
   background: var(--selection);
-  color: var(--text);
+  color: #ffffff;
 }
 
 body {
@@ -89,11 +93,9 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.72;
+  font-weight: 400;
   color: var(--text);
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(61, 95, 120, 0.06), transparent 60%),
-    var(--bg);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.3s ease, color 0.3s ease;
@@ -183,7 +185,7 @@ body {
 #wiki-search::placeholder { color: var(--text-muted); }
 
 #wiki-search:focus {
-  border-color: var(--accent-muted);
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
   width: 280px;
 }
@@ -230,7 +232,7 @@ body {
 }
 
 .icon-btn:hover {
-  border-color: var(--accent-muted);
+  border-color: var(--accent);
   background: var(--accent-soft);
   color: var(--text);
 }
@@ -263,11 +265,11 @@ body {
 }
 
 [data-theme="light"] .wiki-nav {
-  --sidebar-bg: #e8e7e2;
+  --sidebar-bg: #f3f4ed;
 }
 
 [data-theme="dark"] .wiki-nav {
-  --sidebar-bg: #101012;
+  --sidebar-bg: #111111;
 }
 
 .wiki-nav::-webkit-scrollbar { width: 4px; }
@@ -370,11 +372,11 @@ body {
 }
 
 [data-theme="light"] .wiki-toc-panel {
-  --bg-subtle: #ecebe6;
+  --bg-subtle: #f3f4ed;
 }
 
 [data-theme="dark"] .wiki-toc-panel {
-  --bg-subtle: #101012;
+  --bg-subtle: #111111;
 }
 
 .wiki-toc-panel:empty,
@@ -390,9 +392,9 @@ body {
 
 .page-title {
   font-size: clamp(1.75rem, 4vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
   margin: 0;
   color: var(--text);
 }
@@ -609,9 +611,9 @@ body {
 }
 
 .tag-pill:hover {
-  border-color: var(--accent-muted);
+  border-color: var(--accent);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-hover);
   text-decoration: none;
 }
 
@@ -880,14 +882,17 @@ body {
 }
 
 .wiki-backlinks a:hover {
-  border-color: var(--accent-muted);
+  border-color: var(--accent);
   background: var(--accent-soft);
+  color: var(--accent-hover);
 }
 
 /* ── Article typography ─────────────────────────────── */
 .article-body {
-  font-size: 1.02rem;
+  font-size: 1rem;
+  font-weight: 300;
   color: var(--text-secondary);
+  line-height: 1.76;
 }
 
 .article-body h1,
@@ -912,6 +917,15 @@ body {
 
 .article-body p { margin: 0.9rem 0; }
 
+.article-body hr {
+  height: 3px;
+  margin: 2rem auto;
+  width: 70%;
+  border: none;
+  background: var(--text);
+  opacity: 1;
+}
+
 .article-body a.anchor {
   opacity: 0;
   margin-left: 0.35em;
@@ -927,19 +941,24 @@ body {
 
 a {
   color: var(--link);
-  text-decoration: underline;
-  text-decoration-color: rgba(61, 95, 120, 0.25);
-  text-underline-offset: 3px;
-  transition: color 0.12s ease, text-decoration-color 0.12s ease;
-}
-
-[data-theme="dark"] a {
-  text-decoration-color: rgba(142, 180, 204, 0.25);
+  text-decoration: none;
+  transition: color 0.2s ease, box-shadow 0.2s ease;
 }
 
 a:hover {
   color: var(--link-hover);
-  text-decoration-color: currentColor;
+}
+
+/* 디에디트 스타일: 본문 링크 마커 + 호버 하이라이트 */
+.article-body a:not(.anchor) {
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: inset 0 -1px 0 0 var(--link-marker);
+}
+
+.article-body a:not(.anchor):hover {
+  color: var(--text);
+  box-shadow: inset 0 -0.5em 0 0 var(--link-marker-hover);
 }
 
 .sidebar-content a,
@@ -950,8 +969,25 @@ a:hover {
 .wiki-toc-panel .toc a,
 .dashboard-recent a,
 .tag-pill,
-.wiki-backlinks a {
+.wiki-backlinks a,
+.nav-tree a,
+.nav-recent-list a,
+.nav-tags-all,
+.dashboard-link,
+.dashboard-more {
   text-decoration: none;
+  box-shadow: none;
+}
+
+.sidebar-content a:hover,
+.wiki-breadcrumb a:hover,
+.wiki-toc-panel .toc a:hover,
+.nav-tree a:hover,
+.nav-recent-list a:hover,
+.nav-tags-all:hover,
+.dashboard-recent a:hover {
+  color: var(--accent);
+  box-shadow: none;
 }
 
 code {
@@ -1038,7 +1074,7 @@ td { color: var(--text-secondary); }
 blockquote {
   margin: 1.5rem 0;
   padding: 0.9rem 1.25rem;
-  border-left: 3px solid var(--accent-muted);
+  border-left: 3px solid var(--accent);
   background: var(--bg-subtle);
   color: var(--text-muted);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;

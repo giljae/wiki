@@ -26,18 +26,18 @@
       startOnLoad: false,
       theme: isDark ? 'dark' : 'neutral',
       themeVariables: isDark ? {
-        primaryColor: '#1c1c21',
-        primaryTextColor: '#ededf0',
-        primaryBorderColor: '#6d9584',
-        lineColor: '#7d7d88',
-        secondaryColor: '#141a17',
-        tertiaryColor: '#16161a'
+        primaryColor: '#1a1a1a',
+        primaryTextColor: '#f5f5f5',
+        primaryBorderColor: '#ee8232',
+        lineColor: '#888888',
+        secondaryColor: '#1f1812',
+        tertiaryColor: '#141414'
       } : {
-        primaryColor: '#f6f5f1',
-        primaryTextColor: '#141416',
-        primaryBorderColor: '#6b8f7c',
-        lineColor: '#76767f',
-        secondaryColor: '#f2f7f4',
+        primaryColor: '#fbfcf6',
+        primaryTextColor: '#000000',
+        primaryBorderColor: '#ee8232',
+        lineColor: '#666666',
+        secondaryColor: '#fff8f0',
         tertiaryColor: '#ffffff'
       },
       securityLevel: 'loose'
