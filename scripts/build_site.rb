@@ -163,15 +163,10 @@ def render_nav_tree(nodes, parent_slug = '')
   %(<ul class="nav-tree">#{items.join}</ul>)
 end
 
-def build_sidebar_html(wiki, pages)
-  manual = wiki.page('_Sidebar')&.formatted_data
+def build_sidebar_html(_wiki, pages)
   tree = build_nav_tree(pages)
   tree_html = render_nav_tree(tree)
-
-  parts = []
-  parts << rewrite_links(manual) if manual
-  parts << %(<div class="nav-section"><p class="nav-heading">문서 목록</p>#{tree_html}</div>)
-  parts.join
+  %(<div class="nav-section"><p class="nav-heading">문서 목록</p>#{tree_html}</div>)
 end
 
 def render_page(page, sidebar_html, footer_html, pages_by_slug)

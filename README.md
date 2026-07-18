@@ -9,7 +9,6 @@ Gollum 기반 Git 위키입니다. Markdown으로 페이지를 작성하고, Git
 ```
 wiki/
 ├── Home.md              # 메인 페이지
-├── _Sidebar.md          # 사이드바 (모든 페이지에 표시)
 ├── _Layout.html         # 정적 사이트 HTML 레이아웃
 ├── Getting-Started.md   # 예시 페이지
 ├── assets/style.css     # 스타일시트
