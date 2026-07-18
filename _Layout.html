@@ -3,8 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= page.title %> — Giljae's Digital Garden</title>
-  <meta name="description" content="<%= site_description %>">
+  <title><%= page.title %> — <%= site_name %></title>
+  <meta name="description" content="<%= meta_description %>">
+  <link rel="canonical" href="<%= canonical %>">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="<%= page.title %> — <%= site_name %>">
+  <meta property="og:description" content="<%= meta_description %>">
+  <meta property="og:url" content="<%= canonical %>">
+  <meta property="og:site_name" content="<%= site_name %>">
+  <link rel="icon" href="<%= BASE_PATH %>/assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,7 +26,7 @@
   <header class="wiki-header">
     <a class="site-title" href="<%= BASE_PATH %>/">
       <span class="site-icon">🌿</span>
-      <span>Giljae's Digital Garden</span>
+      <span><%= site_name %></span>
     </a>
     <div class="header-tools">
       <div class="search-wrap">
@@ -46,6 +53,9 @@
       <article class="wiki-article">
         <header class="article-header">
           <h1 class="page-title"><%= page.title %></h1>
+          <% if clean_url_path != "#{BASE_PATH}/" %>
+          <p class="page-path"><%= clean_url_path %></p>
+          <% end %>
         </header>
         <div class="article-body">
           <%= content %>
@@ -59,6 +69,12 @@
           <%= page.version.authored_date.strftime('%Y-%m-%d') %>
         </small>
       </footer>
+      <% end %>
+
+      <% if footer %>
+      <div class="wiki-site-footer">
+        <%= footer %>
+      </div>
       <% end %>
     </main>
   </div>
