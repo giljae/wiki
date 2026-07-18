@@ -1,3 +1,6 @@
+---
+tags:  [ai-engineer, ai-engineering, fde]
+---
 # AI 엔지니어링 가이드
 ## AI 엔지니어의 역할
 * [AI 엔지니어 역할](role/01-role.md)
