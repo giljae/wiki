@@ -34,7 +34,7 @@ comments: false
 | `comments` | `false`면 Giscus 댓글 숨김 (선택) |
 
 - 문서 본문 위에 태그 pill이 표시됩니다.
-- [Taglist](/tags/)에서 전체 태그를 볼 수 있습니다.
+- [Tags](/tags/)에서 전체 태그를 볼 수 있습니다.
 - 각 태그 페이지(`/tags/guide/`)에서 관련 문서만 모아 볼 수 있습니다.
 
 ## URL 경로
@@ -50,7 +50,7 @@ comments: false
 | `/tags/guide/` | 특정 태그 문서 |
 | `/feed.xml` | RSS 피드 |
 
-상단 메뉴: **Blog** · **Recent** · **Index** · **Taglist**
+상단 메뉴: **Blog** · **Recent** · **Index** · **Tags**
 
 페이지 상단 **breadcrumb**(Home / notes / About)에서 각 단계를 클릭해 이동할 수 있습니다.
 

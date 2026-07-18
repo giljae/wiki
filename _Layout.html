@@ -38,7 +38,7 @@
           <a class="header-nav-link" href="<%= BLOG_URL %>" target="_blank" rel="noopener">Blog</a>
           <a class="header-nav-link<%= header_nav_active.call('recent') ? ' is-active' : '' %>" href="<%= static_href('recent') %>"<%= header_nav_active.call('recent') ? ' aria-current="page"' : '' %>>Recent</a>
           <a class="header-nav-link<%= header_nav_active.call('index') ? ' is-active' : '' %>" href="<%= static_href('index') %>"<%= header_nav_active.call('index') ? ' aria-current="page"' : '' %>>Index</a>
-          <a class="header-nav-link<%= header_nav_active.call('tags') ? ' is-active' : '' %>" href="<%= tags_index_href %>"<%= header_nav_active.call('tags') ? ' aria-current="page"' : '' %>>Taglist</a>
+          <a class="header-nav-link<%= header_nav_active.call('tags') ? ' is-active' : '' %>" href="<%= tags_index_href %>"<%= header_nav_active.call('tags') ? ' aria-current="page"' : '' %>>Tags</a>
         </nav>
       </div>
       <div class="header-tools">
