@@ -20,6 +20,8 @@ LAYOUT = File.join(ROOT, '_Layout.html')
 SITE_NAME = "Giljae's Digital Garden"
 SITE_DESCRIPTION = "#{SITE_NAME} — Gollum 기반 개인 위키"
 BLOG_URL = 'https://giljae.com'
+OG_IMAGE_PATH = '/assets/og-image.svg'
+RSS_FEED_LIMIT = 30
 
 SKIP_PAGES = %w[README 404].freeze
 ASSET_PREFIXES = %w[assets].freeze
@@ -188,6 +190,19 @@ end
 def tags_index_href
   base = BASE_PATH.empty? ? '' : BASE_PATH
   "#{base}/tags/"
+end
+
+def rss_feed_href
+  base = BASE_PATH.empty? ? '' : BASE_PATH
+  "#{base}/feed.xml"
+end
+
+def og_image_url
+  "#{SITE_URL.chomp('/')}#{BASE_PATH.empty? ? '' : BASE_PATH}#{OG_IMAGE_PATH}"
+end
+
+def xml_escape(text)
+  CGI.escapeHTML(text.to_s)
 end
 
 def page_formatted_data(page)
@@ -615,6 +630,7 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
   virtual_page = opts[:virtual_page]
   header_nav_active = lambda do |section|
     case section
+    when 'recent' then slug == 'recent'
     when 'index' then slug == 'index'
     when 'tags' then slug == 'tags' || slug.start_with?('tags/')
     else false
@@ -622,6 +638,8 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
   end
   giscus_config = GISCUS_CONFIG
   comments_enabled = giscus_config && comments_enabled?(page, virtual_page, slug)
+  og_image = og_image_url
+  rss_feed_url = "#{SITE_URL.chomp('/')}#{rss_feed_href}"
 
   template = ERB.new(File.read(LAYOUT))
   template.result(binding)
@@ -646,6 +664,47 @@ def build_search_index(pages)
       'content' => ([tags.join(' ')] + [plain_text(html)]).join(' ').strip
     }
   end
+end
+
+def build_rss_feed(pages)
+  items = recent_pages_sorted(pages).first(RSS_FEED_LIMIT)
+  feed_link = "#{SITE_URL.chomp('/')}#{rss_feed_href}"
+  updated_at = items.first&.version&.authored_date || Time.now
+  updated_iso = updated_at.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+  entries = items.map do |page|
+    slug = page_slug(page)
+    meta = page_metadata(page)
+    title = meta['title'] || page.title
+    summary = meta['description'].to_s.strip
+    summary = page_description(page, page_formatted_data(page)) if summary.empty?
+    published = page.version&.authored_date || Time.now
+    published_iso = published.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+    link = canonical_url(slug)
+
+    <<~ENTRY.strip
+      <entry>
+        <title>#{xml_escape(title)}</title>
+        <link href="#{xml_escape(link)}" />
+        <id>#{xml_escape(link)}</id>
+        <updated>#{published_iso}</updated>
+        <summary>#{xml_escape(summary)}</summary>
+      </entry>
+    ENTRY
+  end
+
+  <<~XML
+    <?xml version="1.0" encoding="utf-8"?>
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <title>#{xml_escape(SITE_NAME)}</title>
+      <subtitle>#{xml_escape(SITE_DESCRIPTION)}</subtitle>
+      <link href="#{xml_escape(feed_link)}" rel="self" type="application/atom+xml" />
+      <link href="#{xml_escape(SITE_URL.chomp('/'))}/" />
+      <id>#{xml_escape(SITE_URL.chomp('/'))}/</id>
+      <updated>#{updated_iso}</updated>
+      #{entries.join("\n  ")}
+    </feed>
+  XML
 end
 
 def build_sitemap(pages, tag_index)
@@ -812,10 +871,12 @@ end
 
 copy_assets
 File.write(File.join(OUTPUT, 'search-index.json'), JSON.pretty_generate(build_search_index(pages)))
+File.write(File.join(OUTPUT, 'feed.xml'), build_rss_feed(pages))
 File.write(File.join(OUTPUT, 'sitemap.xml'), build_sitemap(pages, tag_index))
 File.write(File.join(OUTPUT, 'robots.txt'), build_robots)
 File.write(File.join(OUTPUT, 'CNAME'), "#{CUSTOM_DOMAIN}\n") unless CUSTOM_DOMAIN.to_s.strip.empty?
 puts '  search-index.json'
+puts '  feed.xml'
 puts '  sitemap.xml'
 puts '  robots.txt'
 puts "  CNAME (#{CUSTOM_DOMAIN})" unless CUSTOM_DOMAIN.to_s.strip.empty?

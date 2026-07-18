@@ -11,6 +11,12 @@
   <meta property="og:description" content="<%= meta_description %>">
   <meta property="og:url" content="<%= canonical %>">
   <meta property="og:site_name" content="<%= site_name %>">
+  <meta property="og:image" content="<%= og_image %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= document_title %>">
+  <meta name="twitter:description" content="<%= meta_description %>">
+  <meta name="twitter:image" content="<%= og_image %>">
+  <link rel="alternate" type="application/atom+xml" title="<%= site_name %> RSS" href="<%= rss_feed_url %>">
   <link rel="icon" href="<%= BASE_PATH %>/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="<%= BASE_PATH %>/assets/style.css">
@@ -30,6 +36,7 @@
         </a>
         <nav class="header-nav" aria-label="사이트 메뉴">
           <a class="header-nav-link" href="<%= BLOG_URL %>" target="_blank" rel="noopener">Blog</a>
+          <a class="header-nav-link<%= header_nav_active.call('recent') ? ' is-active' : '' %>" href="<%= static_href('recent') %>"<%= header_nav_active.call('recent') ? ' aria-current="page"' : '' %>>Recent</a>
           <a class="header-nav-link<%= header_nav_active.call('index') ? ' is-active' : '' %>" href="<%= static_href('index') %>"<%= header_nav_active.call('index') ? ' aria-current="page"' : '' %>>Index</a>
           <a class="header-nav-link<%= header_nav_active.call('tags') ? ' is-active' : '' %>" href="<%= tags_index_href %>"<%= header_nav_active.call('tags') ? ' aria-current="page"' : '' %>>Taglist</a>
         </nav>

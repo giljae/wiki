@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Giljae's Digital Garden">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fbfcf6"/>
+      <stop offset="1" stop-color="#fff8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="80" y="80" width="1040" height="470" rx="28" fill="#ffffff" stroke="#ee8232" stroke-width="3"/>
+  <circle cx="180" cy="180" r="52" fill="#ee8232"/>
+  <path d="M180 148c-18 24-36 36-36 60 0 22 18 40 36 40s36-18 36-40c0-24-18-36-36-60z" fill="#fff"/>
+  <text x="270" y="175" font-family="Pretendard, system-ui, sans-serif" font-size="54" font-weight="700" fill="#111111">Giljae's Digital Garden</text>
+  <text x="270" y="235" font-family="Pretendard, system-ui, sans-serif" font-size="30" fill="#666666">0µ ôp© x ¤</text>
+  <text x="270" y="420" font-family="Pretendard, system-ui, sans-serif" font-size="28" fill="#ee8232">wiki.giljae.com</text>
+</svg>
