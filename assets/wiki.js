@@ -24,7 +24,22 @@
     const isDark = document.documentElement.dataset.theme === 'dark';
     mermaid.initialize({
       startOnLoad: false,
-      theme: isDark ? 'dark' : 'forest',
+      theme: isDark ? 'dark' : 'neutral',
+      themeVariables: isDark ? {
+        primaryColor: '#2c2c30',
+        primaryTextColor: '#ececee',
+        primaryBorderColor: '#3d5248',
+        lineColor: '#7e7e86',
+        secondaryColor: '#1a201c',
+        tertiaryColor: '#1a1a1d'
+      } : {
+        primaryColor: '#f3f2ef',
+        primaryTextColor: '#1a1a1c',
+        primaryBorderColor: '#b8c9c0',
+        lineColor: '#7a7a82',
+        secondaryColor: '#f0f4f2',
+        tertiaryColor: '#efeeeb'
+      },
       securityLevel: 'loose'
     });
   }
