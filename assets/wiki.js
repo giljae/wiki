@@ -15,6 +15,29 @@
       document.documentElement.dataset.theme = next;
       localStorage.setItem('wiki-theme', next);
       updateMermaidTheme();
+      updateGiscusTheme();
+    });
+  }
+
+  function giscusThemeName() {
+    return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: giscusThemeName() } } },
+      'https://giscus.app'
+    );
+  }
+
+  function initGiscus() {
+    if (!document.querySelector('.wiki-comments')) return;
+
+    window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://giscus.app' || !event.data.giscus) return;
+      updateGiscusTheme();
     });
   }
 
@@ -258,6 +281,7 @@
   // ── Boot ───────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
+    initGiscus();
     initNav();
     initAutoToc();
     initCodeCopy();

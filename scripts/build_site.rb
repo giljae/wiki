@@ -25,6 +25,29 @@ SKIP_PAGES = %w[README 404].freeze
 ASSET_PREFIXES = %w[assets].freeze
 RECENT_HOME_LIMIT = 25
 
+def load_giscus_config
+  path = File.join(ROOT, 'giscus.yml')
+  return nil unless File.exist?(path)
+
+  config = YAML.safe_load(File.read(path), permitted_classes: [Symbol], aliases: true) || {}
+  repo_id = config['repo_id'].to_s.strip
+  category_id = config['category_id'].to_s.strip
+  return nil if repo_id.empty? || category_id.empty?
+
+  config
+end
+
+GISCUS_CONFIG = load_giscus_config
+
+def comments_enabled?(page, virtual_page, slug)
+  return false unless GISCUS_CONFIG
+  return false if virtual_page
+  return false if %w[Home 404].include?(slug)
+  return false if page_metadata(page)['comments'] == false
+
+  true
+end
+
 def page_slug(page)
   page.url_path.sub(/\.(md|markdown)$/i, '')
 end
@@ -597,6 +620,8 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
     else false
     end
   end
+  giscus_config = GISCUS_CONFIG
+  comments_enabled = giscus_config && comments_enabled?(page, virtual_page, slug)
 
   template = ERB.new(File.read(LAYOUT))
   template.result(binding)
