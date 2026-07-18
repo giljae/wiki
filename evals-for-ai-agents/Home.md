@@ -4,3 +4,4 @@ AI 에이전트를 위한 실용적인 평가 도구를 습득하세요. 일반�
 
 * [에이전트 평가](../1-introduction-to-evals)
 * [인간 참여형 평가](../2-human-in-the-loop-evaluation)
+* [판사로서의 법학 석사 LLM](../3-llm-as-a-judge)
