@@ -105,6 +105,20 @@ def extract_toc_and_content(html)
   [doc.to_html, toc_html]
 end
 
+def folder_index_slug(path_so_far, pages_by_slug)
+  index_slug = "#{path_so_far}/Home"
+  pages_by_slug[index_slug] ? index_slug : nil
+end
+
+def breadcrumb_url(path_so_far, pages_by_slug)
+  return static_href(path_so_far) if pages_by_slug[path_so_far]
+
+  index = folder_index_slug(path_so_far, pages_by_slug)
+  return static_href(index) if index
+
+  nil
+end
+
 def build_breadcrumbs(slug, pages_by_slug)
   if slug == 'Home'
     return [{ label: 'Home', url: nil }]
@@ -116,8 +130,25 @@ def build_breadcrumbs(slug, pages_by_slug)
   parts.each_with_index do |_part, i|
     path_so_far = parts[0..i].join('/')
     page = pages_by_slug[path_so_far]
-    label = page ? page.title : parts[i]
-    url = (i == parts.length - 1) ? nil : static_href(path_so_far)
+    index_slug = folder_index_slug(path_so_far, pages_by_slug)
+    index_page = index_slug && pages_by_slug[index_slug]
+
+    label = if page
+              page.title
+            elsif index_page && i == parts.length - 1
+              index_page.title
+            elsif index_page
+              File.basename(path_so_far)
+            else
+              parts[i]
+            end
+
+    url = if i == parts.length - 1
+            nil
+          else
+            breadcrumb_url(path_so_far, pages_by_slug)
+          end
+
     crumbs << { label: label, url: url }
   end
   crumbs
@@ -152,6 +183,8 @@ def render_nav_tree(nodes, parent_slug = '')
 
     if node['page']
       link = %(<a href="#{static_href(full_slug)}" data-slug="#{full_slug}">#{title}</a>)
+    elsif (index_slug = folder_index_slug(full_slug, @pages_by_slug))
+      link = %(<a href="#{static_href(index_slug)}" data-slug="#{full_slug}" class="nav-folder-link">#{title}</a>)
     else
       link = %(<span class="nav-folder-label" data-slug="#{full_slug}">#{title}</span>)
     end
@@ -164,9 +197,12 @@ def render_nav_tree(nodes, parent_slug = '')
 end
 
 def build_sidebar_html(_wiki, pages)
+  @pages_by_slug = pages.to_h { |p| [page_slug(p), p] }
   tree = build_nav_tree(pages)
   tree_html = render_nav_tree(tree)
   %(<div class="nav-section"><p class="nav-heading">문서 목록</p>#{tree_html}</div>)
+ensure
+  @pages_by_slug = nil
 end
 
 def render_page(page, sidebar_html, footer_html, pages_by_slug)

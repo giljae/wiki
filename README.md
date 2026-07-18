@@ -36,7 +36,7 @@ wiki/
 | `robots.txt` | 크롤러 안내 (빌드 시 자동 생성) |
 | `search-index.json` | 클라이언트 검색 인덱스 |
 
-사이드바 **All Pages** 목록은 빌드 시 자동 생성됩니다.
+사이드바 **문서 목록**은 빌드 시 모든 페이지를 폴더 구조대로 자동 생성됩니다.
 
 ## 로컬에서 편집하기
 
@@ -89,7 +89,7 @@ http://localhost:8000/wiki/ 에서 확인합니다.
 | `assets/wiki.js` | 플러그인 (검색, Mermaid, KaTeX, 코드 복사) |
 | `assets/rouge.css` | 코드 하이라이트 색상 |
 | `custom.css` | 추가 스타일 (선택) |
-| `_Sidebar.md` | 사이드바 내용 |
+| `_Footer.md` | 사이트 하단 |
 
 ## 플러그인
 
