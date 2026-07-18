@@ -1,28 +1,57 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= page.title %> — Giljae's Digital Garden</title>
+  <meta name="description" content="<%= site_description %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<%= BASE_PATH %>/assets/style.css">
+  <link rel="stylesheet" href="<%= BASE_PATH %>/assets/rouge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <% if File.exist?(File.join(ROOT, 'custom.css')) %>
   <link rel="stylesheet" href="<%= BASE_PATH %>/custom.css">
   <% end %>
 </head>
 <body>
+  <header class="wiki-header">
+    <a class="site-title" href="<%= BASE_PATH %>/">
+      <span class="site-icon">🌿</span>
+      <span>Giljae's Digital Garden</span>
+    </a>
+    <div class="header-tools">
+      <div class="search-wrap">
+        <input id="wiki-search" type="search" placeholder="검색..." autocomplete="off" aria-label="위키 검색">
+        <div id="search-results" class="search-results" hidden></div>
+      </div>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="테마 전환" title="라이트/다크 모드">
+        <span class="theme-icon-light">☀️</span>
+        <span class="theme-icon-dark">🌙</span>
+      </button>
+    </div>
+  </header>
+
   <div class="wiki-container">
     <% if sidebar %>
     <aside class="wiki-sidebar">
-      <div class="sidebar-content">
+      <nav class="sidebar-content" aria-label="사이드바">
         <%= sidebar %>
-      </div>
+      </nav>
     </aside>
     <% end %>
+
     <main class="wiki-content">
-      <article>
-        <h1 class="page-title"><%= page.title %></h1>
-        <%= content %>
+      <article class="wiki-article">
+        <header class="article-header">
+          <h1 class="page-title"><%= page.title %></h1>
+        </header>
+        <div class="article-body">
+          <%= content %>
+        </div>
       </article>
+
       <% if page.version && page.version.author %>
       <footer class="wiki-footer">
         <small>
@@ -33,5 +62,16 @@
       <% end %>
     </main>
   </div>
+
+  <script>
+    window.WIKI_CONFIG = {
+      basePath: "<%= BASE_PATH %>",
+      searchIndexUrl: "<%= BASE_PATH %>/search-index.json"
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="<%= BASE_PATH %>/assets/wiki.js"></script>
 </body>
 </html>

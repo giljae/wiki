@@ -72,9 +72,23 @@ http://localhost:8000/wiki/ 에서 확인합니다.
 | 파일 | 역할 |
 |------|------|
 | `_Layout.html` | HTML 레이아웃 (ERB 템플릿) |
-| `assets/style.css` | 기본 스타일 |
+| `assets/style.css` | 테마 (라이트/다크 모드 CSS 변수) |
+| `assets/wiki.js` | 플러그인 (검색, Mermaid, KaTeX, 코드 복사) |
+| `assets/rouge.css` | 코드 하이라이트 색상 |
 | `custom.css` | 추가 스타일 (선택) |
 | `_Sidebar.md` | 사이드바 내용 |
+
+## 플러그인
+
+- **검색** — 헤더 검색창 (클라이언트 사이드)
+- **Mermaid** — ` ```mermaid ` 코드 블록
+- **KaTeX** — `$수식$` 또는 `$$블록$$`
+- **TOC** — `[[_TOC_]]` 매크로
+- **알림 박스** — `<<Note("내용")>>`, `<<Warn("내용")>>`
+- **다크 모드** — 헤더 🌙/☀️ 버튼
+- **코드 복사** — 코드 블록 hover 시 Copy 버튼
+
+자세한 사용법은 [[Plugins]] 페이지를 참고하세요.
 
 ## Gollum vs GitHub Pages
 

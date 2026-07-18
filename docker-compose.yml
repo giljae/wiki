@@ -5,3 +5,4 @@ services:
       - "4567:4567"
     volumes:
       - .:/wiki
+    command: ["--math", "katex"]

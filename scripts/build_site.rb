@@ -3,12 +3,15 @@
 
 require 'fileutils'
 require 'erb'
+require 'json'
+require 'nokogiri'
 require 'gollum-lib'
 
 ROOT = File.expand_path('..', __dir__)
 OUTPUT = File.join(ROOT, '_site')
 BASE_PATH = ENV.fetch('BASE_PATH', '/wiki').chomp('/')
 LAYOUT = File.join(ROOT, '_Layout.html')
+SITE_DESCRIPTION = "Giljae's Digital Garden — Gollum 기반 개인 위키"
 
 SKIP_PAGES = %w[README].freeze
 
@@ -45,8 +48,12 @@ def rewrite_links(html)
 
   html.gsub(%r{src="(#{Regexp.escape(prefix)})?/([^"]+)"}m) do
     path = Regexp.last_match(2)
-  %(src="#{prefix}/#{path}")
+    %(src="#{prefix}/#{path}")
   end
+end
+
+def plain_text(html)
+  Nokogiri::HTML(html).text.gsub(/\s+/, ' ').strip
 end
 
 def render_page(page, sidebar_html)
@@ -54,23 +61,28 @@ def render_page(page, sidebar_html)
   content = rewrite_links(content)
 
   sidebar = sidebar_html ? rewrite_links(sidebar_html) : nil
+  site_description = SITE_DESCRIPTION
 
   template = ERB.new(File.read(LAYOUT))
   template.result(binding)
 end
 
 def copy_assets
-  %w[assets custom.css].each do |asset|
-    src = File.join(ROOT, asset)
-    next unless File.exist?(src)
+  assets_dir = File.join(ROOT, 'assets')
+  FileUtils.cp_r(assets_dir, OUTPUT) if File.directory?(assets_dir)
 
-    dest = File.join(OUTPUT, asset)
-    if File.directory?(src)
-      FileUtils.cp_r(src, OUTPUT)
-    else
-      FileUtils.mkdir_p(File.dirname(dest))
-      FileUtils.cp(src, dest)
-    end
+  custom = File.join(ROOT, 'custom.css')
+  FileUtils.cp(custom, OUTPUT) if File.exist?(custom)
+end
+
+def build_search_index(pages)
+  pages.map do |page|
+    html = page.formatted_data
+    {
+      'title' => page.title,
+      'url' => static_href(page_slug(page)),
+      'content' => plain_text(html)
+    }
   end
 end
 
@@ -91,4 +103,6 @@ pages.each do |page|
 end
 
 copy_assets
+File.write(File.join(OUTPUT, 'search-index.json'), JSON.pretty_generate(build_search_index(pages)))
+puts "  search-index.json"
 puts "\nBuilt #{pages.size} pages to #{OUTPUT}"

@@ -2,3 +2,4 @@
 
 - [[Home]]
 - [[Getting-Started]]
+- [[Plugins]]
