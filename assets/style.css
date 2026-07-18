@@ -27,9 +27,8 @@
   --warn-border: #d4c4a8;
   --danger: #b85c5c;
   --selection: rgba(90, 107, 98, 0.18);
-  --font-serif: "Newsreader", "Noto Serif KR", Georgia, serif;
-  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "SF Mono", "Fira Code", Consolas, monospace;
+  --font-body: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "Pretendard Variable", "SF Mono", "Fira Code", Consolas, monospace;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -76,7 +75,7 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.75;
   color: var(--text);
@@ -105,7 +104,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   font-size: 1.1rem;
   font-weight: 500;
   color: var(--text);
@@ -261,7 +260,7 @@ body {
 }
 
 .page-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   font-size: 2.1rem;
   font-weight: 500;
   margin: 0 0 0.3rem;
@@ -288,7 +287,7 @@ body {
 .article-body h2,
 .article-body h3,
 .article-body h4 {
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   color: var(--text);
   scroll-margin-top: 80px;
 }
@@ -379,7 +378,7 @@ code {
   right: 0.5rem;
   padding: 0.22rem 0.5rem;
   font-size: 0.72rem;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-elevated);
