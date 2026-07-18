@@ -94,17 +94,6 @@
           </footer>
           <% end %>
         </article>
-
-        <aside class="wiki-toc-panel" id="wiki-toc-panel" aria-label="목차">
-          <% if toc_sidebar %>
-          <%= toc_sidebar %>
-          <% else %>
-          <div class="toc toc-auto" hidden>
-            <div class="toc-title">목차</div>
-            <ul id="wiki-auto-toc"></ul>
-          </div>
-          <% end %>
-        </aside>
       </div>
 
       <% if footer %>
@@ -113,6 +102,17 @@
       </div>
       <% end %>
     </main>
+
+    <aside class="wiki-toc-panel" id="wiki-toc-panel" aria-label="목차">
+      <% if toc_sidebar %>
+      <%= toc_sidebar %>
+      <% else %>
+      <div class="toc toc-auto" hidden>
+        <div class="toc-title">목차</div>
+        <ul id="wiki-auto-toc"></ul>
+      </div>
+      <% end %>
+    </aside>
   </div>
 
   <script>
