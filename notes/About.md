@@ -1,3 +1,7 @@
+---
+tags: [example, notes]
+---
+
 # About
 
 `notes` 폴더의 예시 페이지입니다.

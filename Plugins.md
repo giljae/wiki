@@ -1,3 +1,8 @@
+---
+tags: [wiki, features]
+description: Mermaid, KaTeX, 검색 등 위키 기능 안내
+---
+
 # 플러그인 & 기능
 
 이 위키에서 사용할 수 있는 기능들입니다.

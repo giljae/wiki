@@ -195,6 +195,18 @@
   // ── Nav highlight & tree ───────────────────────────────
   function initNav() {
     const slug = config.currentSlug;
+
+    document.querySelectorAll('.nav-toggle').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const li = btn.closest('.nav-item');
+        if (!li) return;
+        const open = li.classList.toggle('nav-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    });
+
     if (!slug) return;
 
     document.querySelectorAll('.nav-tree a[data-slug]').forEach((link) => {

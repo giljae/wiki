@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= page.title %> — <%= site_name %></title>
+  <title><%= document_title %></title>
   <meta name="description" content="<%= meta_description %>">
   <link rel="canonical" href="<%= canonical %>">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="<%= page.title %> — <%= site_name %>">
+  <meta property="og:title" content="<%= document_title %>">
   <meta property="og:description" content="<%= meta_description %>">
   <meta property="og:url" content="<%= canonical %>">
   <meta property="og:site_name" content="<%= site_name %>">
@@ -50,8 +50,10 @@
     <main class="wiki-main">
       <nav class="wiki-tabs" aria-label="문서 도구">
         <span class="wiki-tab is-active">읽기</span>
+        <% unless virtual_page %>
         <a class="wiki-tab" href="<%= edit_url %>" target="_blank" rel="noopener">편집</a>
         <a class="wiki-tab" href="<%= history_url %>" target="_blank" rel="noopener">역사</a>
+        <% end %>
       </nav>
 
       <nav class="wiki-breadcrumb" aria-label="경로">
@@ -67,10 +69,17 @@
 
       <div class="wiki-article-wrap">
         <article class="wiki-article">
-          <h1 class="page-title"><%= page.title %></h1>
+          <h1 class="page-title"><%= display_title %></h1>
+          <% if tags_html %>
+          <%= tags_html %>
+          <% end %>
           <div class="article-body">
             <%= content %>
           </div>
+
+          <% if backlinks_html %>
+          <%= backlinks_html %>
+          <% end %>
 
           <% if page.version && page.version.author %>
           <footer class="wiki-footer">
