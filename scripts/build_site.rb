@@ -225,7 +225,32 @@ def render_tag_cloud_html(tag_index, limit: 14)
   %(<div class="nav-section nav-tags"><p class="nav-heading">태그</p><div class="tag-cloud">#{items.join}#{more}</div><a class="nav-tags-all" href="#{tags_index_href}">모든 태그</a></div>)
 end
 
-def render_dashboard_html(pages, tag_index)
+def build_popular_pages(pages, backlink_index, limit: 6)
+  ranked = pages.filter_map do |page|
+    slug = page_slug(page)
+    next if slug == 'Home'
+
+    meta = page_metadata(page)
+    backlinks = backlink_index[slug]&.length || 0
+    boost = meta['popular'].to_i
+    featured = meta['featured'] ? 100 : 0
+    score = (backlinks * 10) + boost + featured
+
+    {
+      page: page,
+      slug: slug,
+      score: score,
+      backlinks: backlinks
+    }
+  end
+
+  ranked
+    .select { |entry| entry[:score].positive? }
+    .sort_by { |entry| [-entry[:score], entry[:page].title.downcase] }
+    .first(limit)
+end
+
+def render_dashboard_html(pages, tag_index, backlink_index)
   recent = pages.sort_by { |p| -(p.version&.authored_date&.to_i || 0) }.first(6)
   recent_items = recent.map do |page|
     slug = page_slug(page)
@@ -234,6 +259,22 @@ def render_dashboard_html(pages, tag_index)
     tag_html = tags.first ? %(<span class="dashboard-tag">#{CGI.escapeHTML(tags.first)}</span>) : ''
     %(<li><a href="#{static_href(slug)}">#{CGI.escapeHTML(page.title)}</a>#{tag_html}<time>#{date}</time></li>)
   end
+
+  popular = build_popular_pages(pages, backlink_index)
+  popular_items = popular.map do |entry|
+    page = entry[:page]
+    metric = if entry[:backlinks].positive?
+               %(<span class="dashboard-metric">#{entry[:backlinks]} 링크</span>)
+             else
+               %(<span class="dashboard-metric">추천</span>)
+             end
+    %(<li><a href="#{static_href(entry[:slug])}">#{CGI.escapeHTML(page.title)}</a>#{metric}</li>)
+  end
+  popular_body = if popular_items.empty?
+                   '<p class="dashboard-empty">아직 링크가 많은 문서가 없습니다. <code>[[페이지]]</code>로 서로 연결해 보세요.</p>'
+                 else
+                   %(<ul>#{popular_items.join}</ul>)
+                 end
 
   tag_items = tag_index.sort_by { |_, e| [-e[:pages].length, e[:display].downcase] }.first(12).map do |_, entry|
     %(<a class="tag-pill" href="#{tag_href(entry[:display])}">#{CGI.escapeHTML(entry[:display])}<span class="tag-count">#{entry[:pages].length}</span></a>)
@@ -258,6 +299,11 @@ def render_dashboard_html(pages, tag_index)
         <div class="dashboard-card dashboard-recent">
           <h2>최근 편집</h2>
           <ul>#{recent_items.join}</ul>
+        </div>
+        <div class="dashboard-card dashboard-popular">
+          <h2>인기 글</h2>
+          <p class="dashboard-card-desc">다른 문서에서 많이 링크된 페이지</p>
+          #{popular_body}
         </div>
         <div class="dashboard-card dashboard-tags">
           <h2>태그 <a class="dashboard-more" href="#{tags_index_href}">전체</a></h2>
@@ -487,7 +533,7 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
     raw_html = page_formatted_data(page)
     content, toc_html = extract_toc_and_content(raw_html)
     content = rewrite_links(content)
-    content = render_dashboard_html(opts[:all_pages], opts[:tag_index]) + content if opts[:dashboard]
+    content = render_dashboard_html(opts[:all_pages], opts[:tag_index], backlink_index) + content if opts[:dashboard]
   end
 
   tags = opts[:tags] || (opts[:virtual_page] ? [] : page_tags(page))
