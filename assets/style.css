@@ -691,6 +691,117 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Recent changes (home) ─────────────────────────── */
+.recent-changes-lead {
+  margin: 0 0 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.recent-changes-lead a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.recent-changes-lead a:hover {
+  color: var(--accent);
+}
+
+.recent-changes {
+  margin-bottom: 2rem;
+}
+
+.recent-changes-heading {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.recent-changes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recent-change-item {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+.recent-change-item:last-child {
+  border-bottom: none;
+}
+
+.recent-change-date {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.recent-change-sep {
+  color: var(--text-muted);
+}
+
+.recent-change-title {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.recent-change-title:hover {
+  color: var(--accent);
+}
+
+.recent-change-meta {
+  display: inline;
+  margin-left: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.recent-change-desc::after {
+  content: ' ';
+}
+
+.recent-change-tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.recent-change-tag:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.recent-changes-footer {
+  margin: 1.25rem 0 0;
+  font-size: 0.92rem;
+}
+
+.recent-changes-footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.recent-changes-footer a:hover {
+  color: var(--accent);
+}
+
+.recent-changes-list-full .recent-change-item {
+  padding: 0.45rem 0;
+}
+
 /* ── Dashboard ──────────────────────────────────────── */
 .wiki-dashboard {
   margin-bottom: 2.5rem;

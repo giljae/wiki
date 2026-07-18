@@ -22,6 +22,7 @@ SITE_DESCRIPTION = "#{SITE_NAME} — Gollum 기반 개인 위키"
 
 SKIP_PAGES = %w[README 404].freeze
 ASSET_PREFIXES = %w[assets].freeze
+RECENT_HOME_LIMIT = 25
 
 def page_slug(page)
   page.url_path.sub(/\.(md|markdown)$/i, '')
@@ -250,79 +251,56 @@ def build_popular_pages(pages, backlink_index, limit: 6)
     .first(limit)
 end
 
-def render_dashboard_html(pages, tag_index, backlink_index)
-  recent = pages.sort_by { |p| -(p.version&.authored_date&.to_i || 0) }.first(6)
-  recent_items = recent.map do |page|
-    slug = page_slug(page)
-    date = page.version&.authored_date&.strftime('%Y-%m-%d') || ''
-    tags = page_tags(page)
-    tag_html = tags.first ? %(<span class="dashboard-tag">#{CGI.escapeHTML(tags.first)}</span>) : ''
-    %(<li><a href="#{static_href(slug)}">#{CGI.escapeHTML(page.title)}</a>#{tag_html}<time>#{date}</time></li>)
-  end
+def recent_pages_sorted(pages, exclude_home: true)
+  list = exclude_home ? pages.reject { |p| page_slug(p) == 'Home' } : pages
+  list.sort_by { |p| -(p.version&.authored_date&.to_i || 0) }
+end
 
-  popular = build_popular_pages(pages, backlink_index)
-  popular_items = popular.map do |entry|
-    page = entry[:page]
-    metric = if entry[:backlinks].positive?
-               %(<span class="dashboard-metric">#{entry[:backlinks]} 링크</span>)
-             else
-               %(<span class="dashboard-metric">추천</span>)
-             end
-    %(<li><a href="#{static_href(entry[:slug])}">#{CGI.escapeHTML(page.title)}</a>#{metric}</li>)
-  end
-  popular_body = if popular_items.empty?
-                   '<p class="dashboard-empty">아직 링크가 많은 문서가 없습니다. <code>[[페이지]]</code>로 서로 연결해 보세요.</p>'
-                 else
-                   %(<ul>#{popular_items.join}</ul>)
-                 end
+def format_recent_date(date)
+  date&.strftime('%Y.%m.%d') || ''
+end
 
-  tag_items = tag_index.sort_by { |_, e| [-e[:pages].length, e[:display].downcase] }.first(12).map do |_, entry|
-    %(<a class="tag-pill" href="#{tag_href(entry[:display])}">#{CGI.escapeHTML(entry[:display])}<span class="tag-count">#{entry[:pages].length}</span></a>)
-  end
+def render_recent_change_item(page)
+  slug = page_slug(page)
+  authored = page.version&.authored_date
+  date = format_recent_date(authored)
+  meta = page_metadata(page)
+  title = meta['title'] || page.title
+  description = meta['description'].to_s.strip
+  tags = page_tags(page)
 
-  quick_links = [
-    { title: '시작 가이드', slug: 'Getting-Started', desc: '편집 방법과 문법' },
-    { title: '플러그인', slug: 'Plugins', desc: 'Mermaid, KaTeX, 검색' },
-    { title: 'notes', slug: 'notes/Home', desc: '폴더 예시' },
-    { title: '모든 태그', slug: nil, href: tags_index_href, desc: '태그별 문서 목록' }
-  ]
-  quick_html = quick_links.map do |link|
-    href = link[:href] || static_href(link[:slug])
-    %(<a class="dashboard-link" href="#{href}"><strong>#{CGI.escapeHTML(link[:title])}</strong><span>#{CGI.escapeHTML(link[:desc])}</span></a>)
-  end
+  desc_html = description.empty? ? '' : %(<span class="recent-change-desc">#{CGI.escapeHTML(description)}</span>)
+  tag_html = tags.map do |tag|
+    %(<a class="recent-change-tag" href="#{tag_href(tag)}">#{CGI.escapeHTML(tag)}</a>)
+  end.join
+  meta_parts = [desc_html, tag_html].reject(&:empty?)
+  meta_block = meta_parts.empty? ? '' : %(<span class="recent-change-meta">#{meta_parts.join}</span>)
+  datetime = authored&.strftime('%Y-%m-%d')
 
-  tagged_count = pages.count { |p| !page_tags(p).empty? }
+  %(<li class="recent-change-item"><time class="recent-change-date" datetime="#{datetime}">#{date}</time><span class="recent-change-sep"> - </span><a class="recent-change-title" href="#{static_href(slug)}">#{CGI.escapeHTML(title)}</a>#{meta_block}</li>)
+end
+
+def render_home_recent_html(pages, limit: RECENT_HOME_LIMIT)
+  recent = recent_pages_sorted(pages)
+  total = recent.length
+  items = recent.first(limit).map { |page| render_recent_change_item(page) }
 
   <<~HTML
-    <section class="wiki-dashboard" aria-label="위키 대시보드">
-      <div class="dashboard-grid">
-        <div class="dashboard-card dashboard-recent">
-          <h2>최근 편집</h2>
-          <ul>#{recent_items.join}</ul>
-        </div>
-        <div class="dashboard-card dashboard-popular">
-          <h2>인기 글</h2>
-          <p class="dashboard-card-desc">다른 문서에서 많이 링크된 페이지</p>
-          #{popular_body}
-        </div>
-        <div class="dashboard-card dashboard-tags">
-          <h2>태그 <a class="dashboard-more" href="#{tags_index_href}">전체</a></h2>
-          <div class="tag-cloud">#{tag_items.join}</div>
-        </div>
-        <div class="dashboard-card dashboard-links">
-          <h2>바로가기</h2>
-          <div class="dashboard-link-grid">#{quick_html.join}</div>
-        </div>
-        <div class="dashboard-card dashboard-stats">
-          <h2>통계</h2>
-          <dl>
-            <div><dt>문서</dt><dd>#{pages.length}</dd></div>
-            <div><dt>태그</dt><dd>#{tag_index.length}</dd></div>
-            <div><dt>태그된 문서</dt><dd>#{tagged_count}</dd></div>
-          </dl>
-        </div>
-      </div>
+    <p class="recent-changes-lead">기억 보조용 개인 위키 · <a href="#{tags_index_href}">태그</a> · <a href="#{static_href('recent')}">전체 문서</a></p>
+    <section class="recent-changes" aria-label="최근 변경된 문서">
+      <h2 class="recent-changes-heading">최근 변경된 문서</h2>
+      <ul class="recent-changes-list">#{items.join}</ul>
+      <p class="recent-changes-footer"><a href="#{static_href('recent')}">전체 문서 리스트 보기 (#{total} 항목)</a></p>
     </section>
+  HTML
+end
+
+def render_recent_index_content(pages)
+  items = recent_pages_sorted(pages).map { |page| render_recent_change_item(page) }
+
+  <<~HTML
+    <p>Git 커밋 날짜 기준으로 최근 수정된 순서입니다.</p>
+    <ul class="recent-changes-list recent-changes-list-full">#{items.join}</ul>
   HTML
 end
 
@@ -533,7 +511,7 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
     raw_html = page_formatted_data(page)
     content, toc_html = extract_toc_and_content(raw_html)
     content = rewrite_links(content)
-    content = render_dashboard_html(opts[:all_pages], opts[:tag_index], backlink_index) + content if opts[:dashboard]
+    content = render_home_recent_html(opts[:all_pages]) + content if opts[:dashboard]
   end
 
   tags = opts[:tags] || (opts[:virtual_page] ? [] : page_tags(page))
@@ -553,6 +531,8 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
   document_title = slug == 'Home' ? site_name : "#{display_title} — #{site_name}"
   meta_description = if opts[:virtual_page] && slug == 'tags'
                        '태그별로 분류된 위키 문서 목록'
+                     elsif opts[:virtual_page] && slug == 'recent'
+                       '최근 변경된 위키 문서 전체 목록'
                      elsif opts[:virtual_page]
                        "#{display_title} 태그가 붙은 위키 문서"
                      elsif opts[:content_override]
@@ -608,6 +588,13 @@ def build_sitemap(pages, tag_index)
   urls << <<~XML.strip
     <url>
       <loc>#{canonical_url('tags')}</loc>
+      <lastmod>#{Time.now.strftime('%Y-%m-%d')}</lastmod>
+    </url>
+  XML
+
+  urls << <<~XML.strip
+    <url>
+      <loc>#{canonical_url('recent')}</loc>
       <lastmod>#{Time.now.strftime('%Y-%m-%d')}</lastmod>
     </url>
   XML
@@ -679,6 +666,24 @@ File.write(
   )
 )
 puts '  tags/index -> tags/index.html'
+
+recent_dest = File.join(OUTPUT, 'recent', 'index.html')
+FileUtils.mkdir_p(File.dirname(recent_dest))
+File.write(
+  recent_dest,
+  render_page(
+    virtual_page(title: '최근 변경된 문서', path: 'recent/index.md'),
+    sidebar_html, footer_html, pages_by_slug, backlink_index,
+    render_opts.merge(
+      slug: 'recent',
+      content_override: render_recent_index_content(pages),
+      breadcrumb_title: '최근 변경된 문서',
+      virtual_page: true,
+      edit_url: guide_url
+    )
+  )
+)
+puts '  recent/index -> recent/index.html'
 
 tag_index.each do |key, entry|
   tag_dest = File.join(OUTPUT, 'tags', key, 'index.html')
