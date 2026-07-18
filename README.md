@@ -17,13 +17,27 @@ wiki/
 └── docker-compose.yml   # 로컬 Gollum 편집기
 ```
 
-## 페이지 작성
+## URL 경로
 
-1. `.md` 파일을 저장소 루트에 추가합니다
-2. `[[다른-페이지]]` 형식으로 링크합니다
-3. `main` 브랜치에 push하면 GitHub Actions가 자동으로 사이트를 배포합니다
+| 파일 | URL |
+|------|-----|
+| `Home.md` | `/wiki/` |
+| `Getting-Started.md` | `/wiki/Getting-Started/` |
+| `notes/About.md` | `/wiki/notes/About/` |
 
-`_`로 시작하는 파일(`_Sidebar.md` 등)은 서브페이지로, 위키 페이지 목록에 표시되지 않습니다.
+`.html` 없이 깔끔한 URL을 사용합니다. 하위 폴더 구조가 URL에 반영됩니다.
+
+## 인프라
+
+| 파일 | 역할 |
+|------|------|
+| `404.md` | 없는 페이지 안내 (`404.html`로 빌드) |
+| `_Footer.md` | 사이트 하단 (모든 페이지) |
+| `sitemap.xml` | 검색엔진용 (빌드 시 자동 생성) |
+| `robots.txt` | 크롤러 안내 (빌드 시 자동 생성) |
+| `search-index.json` | 클라이언트 검색 인덱스 |
+
+사이드바 **All Pages** 목록은 빌드 시 자동 생성됩니다.
 
 ## 로컬에서 편집하기
 
