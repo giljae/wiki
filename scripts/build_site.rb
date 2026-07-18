@@ -492,6 +492,59 @@ def build_backlink_index(pages)
   index.transform_values { |arr| arr.uniq { |item| item[:slug] } }
 end
 
+def graph_node_group(slug)
+  slug.include?('/') ? slug.split('/').first : 'root'
+end
+
+def build_graph_data(pages)
+  pages_by_slug = pages.to_h { |p| [page_slug(p), p] }
+  skip = %w[Home 404]
+
+  nodes = pages.filter_map do |page|
+    slug = page_slug(page)
+    next if skip.include?(slug)
+
+    meta = page_metadata(page)
+    {
+      'id' => slug,
+      'label' => meta['title'] || page.title,
+      'url' => static_href(slug),
+      'group' => graph_node_group(slug)
+    }
+  end
+
+  edges = []
+  pages.each do |source|
+    source_slug = page_slug(source)
+    next if skip.include?(source_slug)
+
+    page_body(source).scan(/\[\[([^\]|#]+)(?:#[^\]]+)?(?:\|[^\]]+)?\]\]/) do |match|
+      target = normalize_path(match[0].strip)
+      next if target.empty? || target == source_slug
+      next unless pages_by_slug[target]
+
+      edges << { 'from' => source_slug, 'to' => target }
+    end
+  end
+
+  {
+    'nodes' => nodes,
+    'edges' => edges.uniq { |e| [e['from'], e['to']] }
+  }
+end
+
+def render_graph_content(graph_data)
+  node_count = graph_data['nodes'].length
+  edge_count = graph_data['edges'].length
+
+  <<~HTML
+    <p><code>[[링크]]</code>로 연결된 문서 관계를 보여줍니다. 노드를 클릭하면 해당 페이지로 이동합니다.</p>
+    <p class="graph-stats">#{node_count}개 문서 · #{edge_count}개 연결</p>
+    <div id="wiki-graph" class="wiki-graph" role="img" aria-label="문서 연결 그래프"></div>
+    <p class="graph-hint">드래그로 이동 · 스크롤로 확대/축소 · 고립된 노드는 아직 다른 문서와 링크되지 않은 페이지입니다.</p>
+  HTML
+end
+
 def render_backlinks_html(slug, backlink_index)
   links = backlink_index[slug]
   return nil if links.nil? || links.empty?
@@ -613,6 +666,8 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
                        '최근 변경된 위키 문서 전체 목록'
                      elsif opts[:virtual_page] && slug == 'index'
                        '폴더 구조별 위키 문서 전체 목차'
+                     elsif opts[:virtual_page] && slug == 'graph'
+                       '위키 문서 간 [[링크]] 연결 그래프'
                      elsif opts[:virtual_page]
                        "#{display_title} 태그가 붙은 위키 문서"
                      elsif opts[:content_override]
@@ -632,6 +687,7 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
     case section
     when 'recent' then slug == 'recent'
     when 'index' then slug == 'index'
+    when 'graph' then slug == 'graph'
     when 'tags' then slug == 'tags' || slug.start_with?('tags/')
     else false
     end
@@ -739,6 +795,13 @@ def build_sitemap(pages, tag_index)
     </url>
   XML
 
+  urls << <<~XML.strip
+    <url>
+      <loc>#{canonical_url('graph')}</loc>
+      <lastmod>#{Time.now.strftime('%Y-%m-%d')}</lastmod>
+    </url>
+  XML
+
   tag_index.each_key do |key|
     urls << <<~XML.strip
       <url>
@@ -777,6 +840,7 @@ pages = wiki.pages.reject(&:sub_page).reject { |p| SKIP_PAGES.include?(page_slug
 pages_by_slug = pages.to_h { |p| [page_slug(p), p] }
 tag_index = build_tag_index(pages)
 backlink_index = build_backlink_index(pages)
+graph_data = build_graph_data(pages)
 sidebar_html = build_sidebar_html(wiki, pages, tag_index)
 render_opts = { tag_index: tag_index, all_pages: pages }
 guide_url = "https://github.com/#{GITHUB_REPO}/blob/#{GITHUB_BRANCH}/Getting-Started.md"
@@ -843,6 +907,24 @@ File.write(
 )
 puts '  index/index -> index/index.html'
 
+graph_dest = File.join(OUTPUT, 'graph', 'index.html')
+FileUtils.mkdir_p(File.dirname(graph_dest))
+File.write(
+  graph_dest,
+  render_page(
+    virtual_page(title: 'Graph', path: 'graph/index.md'),
+    sidebar_html, footer_html, pages_by_slug, backlink_index,
+    render_opts.merge(
+      slug: 'graph',
+      content_override: render_graph_content(graph_data),
+      breadcrumb_title: 'Graph',
+      virtual_page: true,
+      edit_url: guide_url
+    )
+  )
+)
+puts '  graph/index -> graph/index.html'
+
 tag_index.each do |key, entry|
   tag_dest = File.join(OUTPUT, 'tags', key, 'index.html')
   FileUtils.mkdir_p(File.dirname(tag_dest))
@@ -871,11 +953,13 @@ end
 
 copy_assets
 File.write(File.join(OUTPUT, 'search-index.json'), JSON.pretty_generate(build_search_index(pages)))
+File.write(File.join(OUTPUT, 'graph.json'), JSON.pretty_generate(graph_data))
 File.write(File.join(OUTPUT, 'feed.xml'), build_rss_feed(pages))
 File.write(File.join(OUTPUT, 'sitemap.xml'), build_sitemap(pages, tag_index))
 File.write(File.join(OUTPUT, 'robots.txt'), build_robots)
 File.write(File.join(OUTPUT, 'CNAME'), "#{CUSTOM_DOMAIN}\n") unless CUSTOM_DOMAIN.to_s.strip.empty?
 puts '  search-index.json'
+puts '  graph.json'
 puts '  feed.xml'
 puts '  sitemap.xml'
 puts '  robots.txt'

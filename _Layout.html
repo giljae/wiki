@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="<%= BASE_PATH %>/custom.css">
   <% end %>
 </head>
-<body>
+<body<% if current_slug == 'graph' %> class="wiki-page-graph"<% end %>>
   <header class="wiki-header">
     <div class="header-inner">
       <div class="header-start">
@@ -38,6 +38,7 @@
           <a class="header-nav-link" href="<%= BLOG_URL %>" target="_blank" rel="noopener">Blog</a>
           <a class="header-nav-link<%= header_nav_active.call('recent') ? ' is-active' : '' %>" href="<%= static_href('recent') %>"<%= header_nav_active.call('recent') ? ' aria-current="page"' : '' %>>Recent</a>
           <a class="header-nav-link<%= header_nav_active.call('index') ? ' is-active' : '' %>" href="<%= static_href('index') %>"<%= header_nav_active.call('index') ? ' aria-current="page"' : '' %>>Index</a>
+          <a class="header-nav-link<%= header_nav_active.call('graph') ? ' is-active' : '' %>" href="<%= static_href('graph') %>"<%= header_nav_active.call('graph') ? ' aria-current="page"' : '' %>>Graph</a>
           <a class="header-nav-link<%= header_nav_active.call('tags') ? ' is-active' : '' %>" href="<%= tags_index_href %>"<%= header_nav_active.call('tags') ? ' aria-current="page"' : '' %>>Tags</a>
         </nav>
       </div>
@@ -155,6 +156,7 @@
     window.WIKI_CONFIG = {
       basePath: "<%= BASE_PATH %>",
       searchIndexUrl: "<%= BASE_PATH %>/search-index.json",
+      graphDataUrl: "<%= BASE_PATH %>/graph.json",
       currentSlug: "<%= current_slug %>"
     };
   </script>

@@ -877,6 +877,35 @@ body {
   font-size: 0.9rem;
 }
 
+/* ── Graph page ─────────────────────────────────────── */
+.wiki-page-graph .wiki-toc-panel {
+  display: none;
+}
+
+.graph-stats,
+.graph-hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.graph-stats {
+  margin: 0 0 1rem;
+}
+
+.graph-hint {
+  margin: 0.85rem 0 0;
+}
+
+.wiki-graph {
+  width: 100%;
+  height: min(72vh, 720px);
+  min-height: 420px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-subtle);
+  overflow: hidden;
+}
+
 /* ── Dashboard ──────────────────────────────────────── */
 .wiki-dashboard {
   margin-bottom: 2.5rem;

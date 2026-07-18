@@ -16,6 +16,7 @@
       localStorage.setItem('wiki-theme', next);
       updateMermaidTheme();
       updateGiscusTheme();
+      updateGraphTheme();
     });
   }
 
@@ -39,6 +40,92 @@
       if (event.origin !== 'https://giscus.app' || !event.data.giscus) return;
       updateGiscusTheme();
     });
+  }
+
+  // ── Graph ────────────────────────────────────────────
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  let graphNetwork = null;
+
+  function graphVisTheme() {
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    return {
+      nodes: {
+        shape: 'dot',
+        size: 16,
+        borderWidth: 2,
+        color: {
+          background: '#ee8232',
+          border: isDark ? '#ffb366' : '#d66f24',
+          highlight: { background: '#ffb366', border: '#ee8232' },
+          hover: { background: '#ffb366', border: '#ee8232' }
+        },
+        font: { color: isDark ? '#f5f5f5' : '#111111', size: 14, face: 'Pretendard, system-ui, sans-serif' }
+      },
+      edges: {
+        width: 1.5,
+        color: { color: isDark ? '#666666' : '#aaaaaa', highlight: '#ee8232', hover: '#ee8232' },
+        arrows: { to: { enabled: true, scaleFactor: 0.55 } },
+        smooth: { type: 'continuous' }
+      }
+    };
+  }
+
+  function updateGraphTheme() {
+    if (!graphNetwork) return;
+    graphNetwork.setOptions(graphVisTheme());
+  }
+
+  async function initGraph() {
+    const container = document.getElementById('wiki-graph');
+    if (!container) return;
+
+    try {
+      const res = await fetch(config.graphDataUrl || '/graph.json');
+      const data = await res.json();
+      if (!data.nodes?.length) {
+        container.innerHTML = '<p class="graph-hint">아직 그래프에 표시할 문서가 없습니다. <code>[[링크]]</code>로 문서를 연결해 보세요.</p>';
+        return;
+      }
+
+      await loadScript('https://unpkg.com/vis-network/standalone/umd/vis-network.min.js');
+      const nodes = new vis.DataSet(data.nodes);
+      const edges = new vis.DataSet(data.edges);
+
+      graphNetwork = new vis.Network(
+        container,
+        { nodes, edges },
+        {
+          physics: {
+            stabilization: { iterations: 180 },
+            barnesHut: { gravitationalConstant: -4200, springLength: 130, springConstant: 0.04 }
+          },
+          interaction: { hover: true, tooltipDelay: 120, zoomView: true, dragView: true },
+          layout: { improvedLayout: data.nodes.length < 120 },
+          ...graphVisTheme()
+        }
+      );
+
+      graphNetwork.on('click', (params) => {
+        if (!params.nodes.length) return;
+        const node = nodes.get(params.nodes[0]);
+        if (node?.url) window.location.href = node.url;
+      });
+
+      graphNetwork.once('stabilizationIterationsDone', () => {
+        graphNetwork.setOptions({ physics: { enabled: data.nodes.length < 80 } });
+      });
+    } catch {
+      container.innerHTML = '<p class="graph-hint">그래프를 불러오지 못했습니다.</p>';
+    }
   }
 
   // ── Mermaid ────────────────────────────────────────────
@@ -287,6 +374,7 @@
     initCodeCopy();
     await loadSearchIndex();
     initSearch();
+    await initGraph();
     initMermaid();
     initMath();
   });
