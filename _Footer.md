@@ -1,3 +1,3 @@
 ---
 
-[GitHub](https://github.com/giljae/wiki) · [Sitemap](/wiki/sitemap.xml)
+[GitHub](https://github.com/giljae/wiki) · [Sitemap](/sitemap.xml)

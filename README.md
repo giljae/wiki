@@ -2,7 +2,7 @@
 
 Gollum 기반 Git 위키입니다. Markdown으로 페이지를 작성하고, GitHub Pages에 자동 배포됩니다.
 
-**사이트 URL:** https://giljae.github.io/wiki/
+**사이트 URL:** https://wiki.giljae.com
 
 ## 구조
 
@@ -20,9 +20,9 @@ wiki/
 
 | 파일 | URL |
 |------|-----|
-| `Home.md` | `/wiki/` |
-| `Getting-Started.md` | `/wiki/Getting-Started/` |
-| `notes/About.md` | `/wiki/notes/About/` |
+| `Home.md` | `/` |
+| `Getting-Started.md` | `/Getting-Started/` |
+| `notes/About.md` | `/notes/About/` |
 
 `.html` 없이 깔끔한 URL을 사용합니다. 하위 폴더 구조가 URL에 반영됩니다.
 
@@ -62,21 +62,21 @@ sudo apt install libgit2-dev pkg-config  # Debian/Ubuntu
 bundle install
 
 # 빌드 (커밋된 파일 기준으로 생성됩니다)
-BASE_PATH=/wiki bundle exec ruby scripts/build_site.rb
+bundle exec ruby scripts/build_site.rb
 
 # 미리보기
 cd _site && python3 -m http.server 8000
 ```
 
-http://localhost:8000/wiki/ 에서 확인합니다.
+http://localhost:8000/ 에서 확인합니다.
 
-## GitHub Pages 설정
+## GitHub Pages & 커스텀 도메인
 
-> **최초 1회 필수:** 아래 설정을 하지 않으면 배포 워크플로가 실패합니다.
+**사이트:** https://wiki.giljae.com
 
 1. https://github.com/giljae/wiki/settings/pages
 2. **Build and deployment** → **Source**를 **GitHub Actions**로 변경
-3. 저장 후 Actions 탭에서 실패한 워크플로를 **Re-run** 하거나, 빈 커밋을 push합니다
+3. **Custom domain**에 `wiki.giljae.com` 입력 (DNS CNAME → `giljae.github.io`)
 
 `main` 브랜치에 push하면 `.github/workflows/deploy.yml`이 자동 실행됩니다.
 

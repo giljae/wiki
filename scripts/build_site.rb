@@ -11,8 +11,9 @@ require 'cgi'
 
 ROOT = File.expand_path('..', __dir__)
 OUTPUT = File.join(ROOT, '_site')
-BASE_PATH = ENV.fetch('BASE_PATH', '/wiki').chomp('/')
-SITE_URL = ENV.fetch('SITE_URL', 'https://giljae.github.io')
+BASE_PATH = ENV.fetch('BASE_PATH', '').chomp('/')
+SITE_URL = ENV.fetch('SITE_URL', 'https://wiki.giljae.com')
+CUSTOM_DOMAIN = ENV.fetch('CUSTOM_DOMAIN', 'wiki.giljae.com')
 GITHUB_REPO = ENV.fetch('GITHUB_REPO', 'giljae/wiki')
 GITHUB_BRANCH = ENV.fetch('GITHUB_BRANCH', 'main')
 LAYOUT = File.join(ROOT, '_Layout.html')
@@ -32,9 +33,10 @@ end
 
 def static_href(path)
   normalized = normalize_path(path)
-  return "#{BASE_PATH}/" if normalized.empty? || normalized == 'Home'
+  return '/' if normalized.empty? || normalized == 'Home'
 
-  "#{BASE_PATH}/#{normalized}/"
+  base = BASE_PATH.empty? ? '' : BASE_PATH
+  "#{base}/#{normalized}/"
 end
 
 def canonical_url(path)
@@ -154,11 +156,13 @@ def tag_slug(tag)
 end
 
 def tag_href(tag)
-  "#{BASE_PATH}/tags/#{tag_slug(tag)}/"
+  base = BASE_PATH.empty? ? '' : BASE_PATH
+  "#{base}/tags/#{tag_slug(tag)}/"
 end
 
 def tags_index_href
-  "#{BASE_PATH}/tags/"
+  base = BASE_PATH.empty? ? '' : BASE_PATH
+  "#{base}/tags/"
 end
 
 def page_formatted_data(page)
@@ -580,11 +584,12 @@ def build_sitemap(pages, tag_index)
 end
 
 def build_robots
+  base = BASE_PATH.empty? ? '' : BASE_PATH
   <<~ROBOTS
     User-agent: *
     Allow: /
 
-    Sitemap: #{SITE_URL.chomp('/')}#{BASE_PATH}/sitemap.xml
+    Sitemap: #{SITE_URL.chomp('/')}#{base}/sitemap.xml
   ROBOTS
 end
 
@@ -659,7 +664,9 @@ copy_assets
 File.write(File.join(OUTPUT, 'search-index.json'), JSON.pretty_generate(build_search_index(pages)))
 File.write(File.join(OUTPUT, 'sitemap.xml'), build_sitemap(pages, tag_index))
 File.write(File.join(OUTPUT, 'robots.txt'), build_robots)
+File.write(File.join(OUTPUT, 'CNAME'), "#{CUSTOM_DOMAIN}\n") unless CUSTOM_DOMAIN.to_s.strip.empty?
 puts '  search-index.json'
 puts '  sitemap.xml'
 puts '  robots.txt'
+puts "  CNAME (#{CUSTOM_DOMAIN})" unless CUSTOM_DOMAIN.to_s.strip.empty?
 puts "\nBuilt #{pages.size} pages to #{OUTPUT}"

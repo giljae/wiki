@@ -33,18 +33,18 @@ description: 짧은 페이지 설명 (선택)
 | `description` | 검색·미리보기용 짧은 설명 (선택) |
 
 - 문서 본문 위에 태그 pill이 표시됩니다
-- [모든 태그](/wiki/tags/) 페이지에서 전체 태그 목록을 볼 수 있습니다
-- 각 태그를 클릭하면 해당 태그 문서만 모아 봅니다 (`/wiki/tags/guide/`)
+- [모든 태그](/tags/) 페이지에서 전체 태그 목록을 볼 수 있습니다
+- 각 태그를 클릭하면 해당 태그 문서만 모아 봅니다 (`/tags/guide/`)
 
 ## URL 경로
 
 | 파일 | URL |
 |------|-----|
-| `Home.md` | `/wiki/` |
-| `Getting-Started.md` | `/wiki/Getting-Started/` |
-| `notes/About.md` | `/wiki/notes/About/` |
-| (태그 목록) | `/wiki/tags/` |
-| (태그별) | `/wiki/tags/guide/` |
+| `Home.md` | `/` |
+| `Getting-Started.md` | `/Getting-Started/` |
+| `notes/About.md` | `/notes/About/` |
+| (태그 목록) | `/tags/` |
+| (태그별) | `/tags/guide/` |
 
 페이지 상단 **breadcrumb**(Home / notes / About)에서 각 단계를 클릭해 이동할 수 있습니다.
 
@@ -57,7 +57,7 @@ description: 짧은 페이지 설명 (선택)
 
 ## 폴더 페이지
 
-하위 폴더에 `Home.md`를 두면 폴더 목록 페이지가 됩니다 (`notes/Home.md` → `/wiki/notes/Home/`).
+하위 폴더에 `Home.md`를 두면 폴더 목록 페이지가 됩니다 (`notes/Home.md` → `/notes/Home/`).
 
 사이드바에서 폴더 이름을 클릭하면 해당 `Home.md`로 이동합니다. 폴더에 `Home.md`가 없으면 링크 없이 표시됩니다.
 
@@ -112,7 +112,7 @@ notes/주제A/개념1.md    # 깊은 폴더도 URL에 반영됨
 
 - 폴더마다 `Home.md`를 두면 섹션 인덱스 페이지가 됩니다.
 - `tags` front matter로 주제별로 묶어 두면 태그 페이지에서 한눈에 볼 수 있습니다.
-- 하위 폴더에서 루트 `Home`으로 가려면 `[[Home]]` 대신 `[위키 메인](/wiki/)`을 사용하세요.
+- 하위 폴더에서 루트 `Home`으로 가려면 `[[Home]]` 대신 `[위키 메인](/)`을 사용하세요.
 
 ## 로컬에서 편집하기
 

@@ -10,4 +10,4 @@ tags: [example, notes]
 
 - [[About]]
 
-[위키 메인으로](/wiki/)
+[위키 메인으로](/)
