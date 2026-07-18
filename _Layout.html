@@ -23,10 +23,17 @@
 <body>
   <header class="wiki-header">
     <div class="header-inner">
-      <a class="site-title" href="<%= BASE_PATH %>/">
-        <img class="site-logo" src="<%= BASE_PATH %>/assets/favicon.svg" alt="" width="28" height="28">
-        <span class="site-name"><%= site_name %></span>
-      </a>
+      <div class="header-start">
+        <a class="site-title" href="<%= BASE_PATH %>/">
+          <img class="site-logo" src="<%= BASE_PATH %>/assets/favicon.svg" alt="" width="28" height="28">
+          <span class="site-name"><%= site_name %></span>
+        </a>
+        <nav class="header-nav" aria-label="사이트 메뉴">
+          <a class="header-nav-link" href="<%= BLOG_URL %>" target="_blank" rel="noopener">Blog</a>
+          <a class="header-nav-link<%= header_nav_active.call('index') ? ' is-active' : '' %>" href="<%= static_href('index') %>"<%= header_nav_active.call('index') ? ' aria-current="page"' : '' %>>Index</a>
+          <a class="header-nav-link<%= header_nav_active.call('tags') ? ' is-active' : '' %>" href="<%= tags_index_href %>"<%= header_nav_active.call('tags') ? ' aria-current="page"' : '' %>>Taglist</a>
+        </nav>
+      </div>
       <div class="header-tools">
         <div class="search-wrap">
           <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>

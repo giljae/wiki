@@ -19,6 +19,7 @@ GITHUB_BRANCH = ENV.fetch('GITHUB_BRANCH', 'main')
 LAYOUT = File.join(ROOT, '_Layout.html')
 SITE_NAME = "Giljae's Digital Garden"
 SITE_DESCRIPTION = "#{SITE_NAME} — Gollum 기반 개인 위키"
+BLOG_URL = 'https://giljae.com'
 
 SKIP_PAGES = %w[README 404].freeze
 ASSET_PREFIXES = %w[assets].freeze
@@ -286,7 +287,7 @@ def render_home_recent_html(pages, limit: RECENT_HOME_LIMIT)
   items = recent.first(limit).map { |page| render_recent_change_item(page) }
 
   <<~HTML
-    <p class="recent-changes-lead">기억 보조용 개인 위키 · <a href="#{tags_index_href}">태그</a> · <a href="#{static_href('recent')}">전체 문서</a></p>
+    <p class="recent-changes-lead">기억 보조용 개인 위키</p>
     <section class="recent-changes" aria-label="최근 변경된 문서">
       <h2 class="recent-changes-heading">최근 변경된 문서</h2>
       <ul class="recent-changes-list">#{items.join}</ul>
@@ -299,8 +300,47 @@ def render_recent_index_content(pages)
   items = recent_pages_sorted(pages).map { |page| render_recent_change_item(page) }
 
   <<~HTML
-    <p>Git 커밋 날짜 기준으로 최근 수정된 순서입니다.</p>
+    <p>Git 커밋 날짜 기준으로 최근 수정된 순서입니다. <a href="#{static_href('index')}">폴더별 목차</a></p>
     <ul class="recent-changes-list recent-changes-list-full">#{items.join}</ul>
+  HTML
+end
+
+def render_index_tree_list(nodes, pages_by_slug, parent_slug = '')
+  return '' if nodes.empty?
+
+  nodes.sort_by { |key, _| key == 'Home' ? '' : key.downcase }.filter_map do |key, node|
+    full_slug = parent_slug.empty? ? key : "#{parent_slug}/#{key}"
+    next if full_slug == 'Home'
+
+    title = CGI.escapeHTML(nav_page_title(node, key))
+    link_html = if node['page']
+                  %(<a href="#{static_href(full_slug)}">#{title}</a>)
+                elsif (index_slug = folder_index_slug(full_slug, pages_by_slug))
+                  %(<a href="#{static_href(index_slug)}">#{title}</a>)
+                else
+                  %(<span class="index-folder-label">#{title}</span>)
+                end
+
+    children_nodes = node['children']
+    if folder_index_slug(full_slug, pages_by_slug)&.end_with?('/Home')
+      children_nodes = children_nodes.reject { |child_key, _| child_key == 'Home' }
+    end
+
+    children = render_index_tree_list(children_nodes, pages_by_slug, full_slug)
+    child_ul = children.empty? ? '' : %(<ul>#{children}</ul>)
+    %(<li>#{link_html}#{child_ul}</li>)
+  end.join
+end
+
+def render_index_content(pages, pages_by_slug)
+  tree = build_nav_tree(pages)
+  items = render_index_tree_list(tree, pages_by_slug)
+  count = pages.count { |p| page_slug(p) != 'Home' }
+
+  <<~HTML
+    <p>폴더 구조대로 정리된 전체 문서 목록입니다. <a href="#{static_href('recent')}">최근 변경 순</a> · <a href="#{tags_index_href}">태그</a></p>
+    <ul class="index-tree">#{items}</ul>
+    <p class="index-footer">총 #{count}개 문서</p>
   HTML
 end
 
@@ -533,6 +573,8 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
                        '태그별로 분류된 위키 문서 목록'
                      elsif opts[:virtual_page] && slug == 'recent'
                        '최근 변경된 위키 문서 전체 목록'
+                     elsif opts[:virtual_page] && slug == 'index'
+                       '폴더 구조별 위키 문서 전체 목차'
                      elsif opts[:virtual_page]
                        "#{display_title} 태그가 붙은 위키 문서"
                      elsif opts[:content_override]
@@ -548,6 +590,13 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
   toc_sidebar = toc_html
   backlinks_html = opts[:virtual_page] ? nil : render_backlinks_html(slug, backlink_index)
   virtual_page = opts[:virtual_page]
+  header_nav_active = lambda do |section|
+    case section
+    when 'index' then slug == 'index'
+    when 'tags' then slug == 'tags' || slug.start_with?('tags/')
+    else false
+    end
+  end
 
   template = ERB.new(File.read(LAYOUT))
   template.result(binding)
@@ -595,6 +644,13 @@ def build_sitemap(pages, tag_index)
   urls << <<~XML.strip
     <url>
       <loc>#{canonical_url('recent')}</loc>
+      <lastmod>#{Time.now.strftime('%Y-%m-%d')}</lastmod>
+    </url>
+  XML
+
+  urls << <<~XML.strip
+    <url>
+      <loc>#{canonical_url('index')}</loc>
       <lastmod>#{Time.now.strftime('%Y-%m-%d')}</lastmod>
     </url>
   XML
@@ -684,6 +740,24 @@ File.write(
   )
 )
 puts '  recent/index -> recent/index.html'
+
+index_dest = File.join(OUTPUT, 'index', 'index.html')
+FileUtils.mkdir_p(File.dirname(index_dest))
+File.write(
+  index_dest,
+  render_page(
+    virtual_page(title: 'Index', path: 'index/index.md'),
+    sidebar_html, footer_html, pages_by_slug, backlink_index,
+    render_opts.merge(
+      slug: 'index',
+      content_override: render_index_content(pages, pages_by_slug),
+      breadcrumb_title: 'Index',
+      virtual_page: true,
+      edit_url: guide_url
+    )
+  )
+)
+puts '  index/index -> index/index.html'
 
 tag_index.each do |key, entry|
   tag_dest = File.join(OUTPUT, 'tags', key, 'index.html')

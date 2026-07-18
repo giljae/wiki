@@ -122,6 +122,41 @@ body {
   min-height: var(--header-h);
 }
 
+.header-start {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.header-nav-link {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.header-nav-link:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+  text-decoration: none;
+}
+
+.header-nav-link.is-active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
 .site-title {
   display: flex;
   align-items: center;
@@ -802,6 +837,46 @@ body {
   padding: 0.45rem 0;
 }
 
+/* ── Index page ─────────────────────────────────────── */
+.index-tree {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.index-tree ul {
+  list-style: none;
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.index-tree li {
+  margin: 0.35rem 0;
+  line-height: 1.5;
+}
+
+.index-tree a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.index-tree a:hover {
+  color: var(--accent);
+}
+
+.index-folder-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.index-footer {
+  margin-top: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 /* ── Dashboard ──────────────────────────────────────── */
 .wiki-dashboard {
   margin-bottom: 2.5rem;
@@ -1330,8 +1405,11 @@ blockquote {
 
 @media (max-width: 768px) {
   .header-inner { padding: 0.65rem 1rem; }
+  .header-start { gap: 0.75rem; }
+  .header-nav { gap: 0; }
+  .header-nav-link { padding: 0.3rem 0.45rem; font-size: 0.78rem; }
   .site-name { display: none; }
-  #wiki-search { width: 140px; }
+  #wiki-search { width: 120px; }
   #wiki-search:focus { width: 180px; }
 
   .wiki-body {
