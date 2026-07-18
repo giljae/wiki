@@ -24,17 +24,18 @@
   <header class="wiki-header">
     <div class="header-inner">
       <a class="site-title" href="<%= BASE_PATH %>/">
-        <span class="site-icon">🌿</span>
-        <span><%= site_name %></span>
+        <img class="site-logo" src="<%= BASE_PATH %>/assets/favicon.svg" alt="" width="28" height="28">
+        <span class="site-name"><%= site_name %></span>
       </a>
       <div class="header-tools">
         <div class="search-wrap">
-          <input id="wiki-search" type="search" placeholder="위키 검색" autocomplete="off" aria-label="위키 검색">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="wiki-search" type="search" placeholder="검색…" autocomplete="off" aria-label="위키 검색">
           <div id="search-results" class="search-results" hidden></div>
         </div>
         <button id="theme-toggle" class="icon-btn" type="button" aria-label="테마 전환" title="라이트/다크 모드">
-          <span class="theme-icon-light">☀️</span>
-          <span class="theme-icon-dark">🌙</span>
+          <svg class="theme-icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 0111.5 5 7 7 0 1021 14.5z"/></svg>
         </button>
       </div>
     </div>
@@ -69,10 +70,12 @@
 
       <div class="wiki-article-wrap">
         <article class="wiki-article">
-          <h1 class="page-title"><%= display_title %></h1>
-          <% if tags_html %>
-          <%= tags_html %>
-          <% end %>
+          <header class="article-header">
+            <h1 class="page-title"><%= display_title %></h1>
+            <% if tags_html %>
+            <%= tags_html %>
+            <% end %>
+          </header>
           <div class="article-body">
             <%= content %>
           </div>
