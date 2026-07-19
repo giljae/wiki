@@ -314,7 +314,7 @@ def recent_pages_sorted(pages, exclude_home: true)
 end
 
 def format_recent_date(date)
-  date&.strftime('%Y.%m.%d') || ''
+  date&.strftime('%Y.%m.%d %H:%M:%S') || ''
 end
 
 def render_recent_change_item(page)
@@ -332,7 +332,7 @@ def render_recent_change_item(page)
   end.join
   meta_parts = [desc_html, tag_html].reject(&:empty?)
   meta_block = meta_parts.empty? ? '' : %(<span class="recent-change-meta">#{meta_parts.join}</span>)
-  datetime = authored&.strftime('%Y-%m-%d')
+  datetime = authored&.strftime('%Y-%m-%dT%H:%M:%S%:z')
 
   %(<li class="recent-change-item"><time class="recent-change-date" datetime="#{datetime}">#{date}</time><span class="recent-change-sep"> - </span><a class="recent-change-title" href="#{static_href(slug)}">#{CGI.escapeHTML(title)}</a>#{meta_block}</li>)
 end
