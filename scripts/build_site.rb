@@ -178,6 +178,24 @@ def page_tags(page)
   Array(page_metadata(page)['tags']).map(&:to_s).map(&:strip).reject(&:empty?)
 end
 
+def page_authored_date(page)
+  page.last_version&.authored_date
+end
+
+def page_display_title(page)
+  meta = page_metadata(page)
+  title = meta['title'].to_s.strip
+  return title unless title.empty?
+
+  slug = page_slug(page)
+  if page.title == 'Home' && slug != 'Home'
+    h1 = page_body(page).match(/\A#\s+([^\n]+)/)&.[](1)&.strip
+    return h1 unless h1.nil? || h1.empty?
+  end
+
+  page.title
+end
+
 def tag_slug(tag)
   tag.to_s.strip.downcase.gsub(/\s+/, '-')
 end
@@ -224,8 +242,8 @@ def build_tag_index(pages)
       index[key][:display] ||= tag
       index[key][:pages] << {
         slug: slug,
-        title: page.title,
-        date: page.version&.authored_date
+        title: page_display_title(page),
+        date: page_authored_date(page)
       }
     end
   end
@@ -292,7 +310,7 @@ end
 
 def recent_pages_sorted(pages, exclude_home: true)
   list = exclude_home ? pages.reject { |p| page_slug(p) == 'Home' } : pages
-  list.sort_by { |p| -(p.version&.authored_date&.to_i || 0) }
+  list.sort_by { |p| [-(page_authored_date(p)&.to_i || 0), page_display_title(p).downcase] }
 end
 
 def format_recent_date(date)
@@ -301,10 +319,10 @@ end
 
 def render_recent_change_item(page)
   slug = page_slug(page)
-  authored = page.version&.authored_date
+  authored = page_authored_date(page)
   date = format_recent_date(authored)
   meta = page_metadata(page)
-  title = meta['title'] || page.title
+  title = page_display_title(page)
   description = meta['description'].to_s.strip
   tags = page_tags(page)
 
@@ -562,11 +580,11 @@ def render_backlinks_html(slug, backlink_index)
 end
 
 def build_recent_html(pages, limit: 8)
-  sorted = pages.sort_by { |p| -(p.version&.authored_date&.to_i || 0) }
+  sorted = pages.sort_by { |p| [-(page_authored_date(p)&.to_i || 0), page_display_title(p).downcase] }
   items = sorted.first(limit).map do |page|
     slug = page_slug(page)
-    date = page.version&.authored_date&.strftime('%Y-%m-%d') || ''
-    %(<li><a href="#{static_href(slug)}">#{CGI.escapeHTML(page.title)}</a><time class="nav-date">#{date}</time></li>)
+    date = page_authored_date(page)&.strftime('%Y-%m-%d') || ''
+    %(<li><a href="#{static_href(slug)}">#{CGI.escapeHTML(page_display_title(page))}</a><time class="nav-date">#{date}</time></li>)
   end
 
   <<~HTML
@@ -654,7 +672,7 @@ def render_page(page, sidebar_html, footer_html, pages_by_slug, backlink_index, 
   display_title = if opts[:virtual_page]
                     page.title
                   else
-                    page_metadata(page)['title'] || page.title
+                    page_display_title(page)
                   end
 
   site_description = SITE_DESCRIPTION
@@ -715,7 +733,7 @@ def build_search_index(pages)
     slug = page_slug(page)
     tags = page_tags(page)
     {
-      'title' => page.title,
+      'title' => page_display_title(page),
       'url' => static_href(slug),
       'content' => ([tags.join(' ')] + [plain_text(html)]).join(' ').strip
     }
@@ -725,16 +743,16 @@ end
 def build_rss_feed(pages)
   items = recent_pages_sorted(pages).first(RSS_FEED_LIMIT)
   feed_link = "#{SITE_URL.chomp('/')}#{rss_feed_href}"
-  updated_at = items.first&.version&.authored_date || Time.now
+  updated_at = page_authored_date(items.first) || Time.now
   updated_iso = updated_at.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 
   entries = items.map do |page|
     slug = page_slug(page)
     meta = page_metadata(page)
-    title = meta['title'] || page.title
+    title = page_display_title(page)
     summary = meta['description'].to_s.strip
     summary = page_description(page, page_formatted_data(page)) if summary.empty?
-    published = page.version&.authored_date || Time.now
+    published = page_authored_date(page) || Time.now
     published_iso = published.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     link = canonical_url(slug)
 
@@ -769,7 +787,7 @@ def build_sitemap(pages, tag_index)
     <<~XML.strip
       <url>
         <loc>#{canonical_url(slug)}</loc>
-        <lastmod>#{page.version&.authored_date&.strftime('%Y-%m-%d') || Time.now.strftime('%Y-%m-%d')}</lastmod>
+        <lastmod>#{page_authored_date(page)&.strftime('%Y-%m-%d') || Time.now.strftime('%Y-%m-%d')}</lastmod>
       </url>
     XML
   end
