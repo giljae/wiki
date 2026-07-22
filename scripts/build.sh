@@ -17,7 +17,7 @@ fi
 echo "🏗️  Building Jupyter Book..."
 BASE_URL=${BASE_URL:-https://wiki.giljae.com} jupyter-book build --html
 
-echo "🔧 Post-processing: injecting missing route module imports..."
+echo "🔧 Post-processing: stripping React hydration for static GitHub Pages..."
 python3 scripts/post-build.py
 
 echo "🔄 Restoring myst.yml..."
