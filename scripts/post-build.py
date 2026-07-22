@@ -74,37 +74,135 @@ print(f'Loaded {len(pages)} pages, generated {item_count} sidebar items')
 
 LAYOUT_CSS = """
 <style>
-/* Single scroll layout - override Jupyter Book fixed layout */
-html, body { height: auto !important; overflow: visible !important; scroll-padding: 0 !important; }
-.myst-top-nav { position: relative !important; top: auto !important; z-index: 10; }
-.myst-primary-sidebar { 
-  position: relative !important; top: auto !important; 
-  height: auto !important; overflow: visible !important;
-  display: block !important; max-width: 100% !important;
+/* Single scroll + two-column layout */
+html, body {
+  height: auto !important;
+  overflow: visible !important;
+  scroll-padding: 0 !important;
 }
-.myst-primary-sidebar-pointer { display: block !important; height: auto !important; overflow: visible !important; }
-.myst-primary-sidebar-nav { overflow: visible !important; }
-.myst-primary-sidebar-footer { display: none !important; }
-main.article-grid { display: block !important; }
-article.article-grid { display: block !important; }
-.myst-fm-block { padding-top: 0 !important; }
+
+/* Top navbar - non-sticky */
+.myst-top-nav {
+  position: relative !important;
+  top: auto !important;
+  z-index: 10;
+}
+
+/* Flex container for sidebar + content */
+body {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Two-column row: sidebar + content */
+.myst-primary-sidebar {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+  max-width: 280px !important;
+  min-width: 240px !important;
+  float: left !important;
+  padding: 16px 8px 16px 16px !important;
+}
+
+.myst-primary-sidebar-pointer {
+  display: block !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.myst-primary-sidebar-nav {
+  overflow: visible !important;
+}
+
+.myst-primary-sidebar-footer {
+  display: none !important;
+}
+
+/* Main content - takes remaining width */
+main.article-grid {
+  display: block !important;
+  margin-left: 280px !important;
+  padding: 24px !important;
+  max-width: none !important;
+}
+
+article.article-grid {
+  display: block !important;
+  max-width: 900px !important;
+}
+
+.myst-fm-block {
+  padding-top: 0 !important;
+}
+
+/* Footer */
+footer.article.footer {
+  margin-left: 280px !important;
+  padding: 20px 24px !important;
+}
+
+/* Sidebar nav links */
+.myst-primary-sidebar-topnav a {
+  display: inline-block !important;
+  margin: 2px 4px !important;
+}
+
+.myst-toc a {
+  display: block;
+  padding: 6px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  font-size: 0.9rem;
+}
+.myst-toc a:hover {
+  background: rgba(0,0,0,0.05);
+}
+
 /* Sidebar folder styling */
-details.sidebar-folder { margin: 2px 0; }
-details.sidebar-folder summary { 
-  cursor: pointer; padding: 6px 8px; border-radius: 8px;
-  font-weight: 600; font-size: 0.95rem;
+details.sidebar-folder {
+  margin: 2px 0;
+}
+details.sidebar-folder > summary {
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
   color: #1a56db;
+  list-style: none;
 }
-details.sidebar-folder summary:hover { background: rgba(0,0,0,0.05); }
-details.sidebar-folder a { 
-  display: block; padding: 4px 12px 4px 24px; border-radius: 8px;
-  text-decoration: none; color: inherit; font-size: 0.9rem;
+details.sidebar-folder > summary::-webkit-details-marker {
+  display: none;
 }
-details.sidebar-folder a:hover { background: rgba(0,0,0,0.05); }
-/* Nav links in sidebar */
-.myst-primary-sidebar-topnav a { display: inline-block; margin: 2px 4px; }
-/* Article content */
-article { padding: 0 16px; max-width: 900px; margin: 0 auto; }
+details.sidebar-folder > summary:before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 0.7rem;
+  transition: transform 0.2s;
+}
+details.sidebar-folder[open] > summary:before {
+  transform: rotate(90deg);
+}
+details.sidebar-folder > summary:hover {
+  background: rgba(0,0,0,0.05);
+}
+details.sidebar-folder a {
+  padding-left: 24px !important;
+}
+
+/* Dark mode overrides */
+.dark .myst-toc a:hover {
+  background: rgba(255,255,255,0.08);
+}
+.dark details.sidebar-folder > summary:hover {
+  background: rgba(255,255,255,0.08);
+}
 </style>
 """
 
