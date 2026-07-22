@@ -1,5 +1,9 @@
+---
+tags: [ai-engineer, role]
+description: AI 엔지니어의 핵심 역할 정의
+---
+
 # AI 엔지니어 역할
-## 핵심 역할
 * 제품에 AI를 통합
 * LLM Provider(OpenAI, Anthopic, Google.,)와 협력
 * AI가 해결할 수 있는 실제 문제를 파악

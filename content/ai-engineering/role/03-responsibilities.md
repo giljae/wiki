@@ -1,5 +1,9 @@
+---
+tags: [ai-engineer, responsibilities]
+description: AI 엔지니어링 직무 책임
+---
+
 # AI 엔지니어링 책임
-## 영역
 * 에이전트 및 에이전트 기반 워크플로우
 * 보안, 안전 및 규정 준수
 * 모니터링 및 유지 관리

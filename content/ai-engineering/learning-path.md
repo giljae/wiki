@@ -1,3 +1,8 @@
+---
+tags: [ai-engineer, learning-path]
+description: AI 엔지니어 학습 로드맵
+---
+
 # AI 엔지니어를 위한 학습 경로
 ## LLM 기초
 * LLM은 어떻게 동작하며, 무엇을 할 수 있고 무엇을 할 수 없는가? LLM의 특징과 한계는 무엇인가?

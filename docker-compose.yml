@@ -1,8 +1,0 @@
-services:
-  gollum:
-    image: gollumwiki/gollum:6
-    ports:
-      - "4567:4567"
-    volumes:
-      - .:/wiki
-    command: ["--math", "katex"]

@@ -1,4 +1,4 @@
-name: Deploy Wiki to GitHub Pages
+name: Deploy Jupyter Book to GitHub Pages
 
 on:
   push:
@@ -14,40 +14,40 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
+          python-version: "3.13"
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libgit2-dev pkg-config
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
 
-      - uses: ruby/setup-ruby@v1
+      - name: Build Jupyter Book
+        run: |
+          BASE_URL=https://wiki.giljae.com ./scripts/build.sh
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          ruby-version: '3.3'
-          bundler-cache: true
-
-      - name: Build static site
-        run: bundle exec ruby scripts/build_site.rb
-        env:
-          BASE_PATH: ""
-          SITE_URL: https://wiki.giljae.com
-          CUSTOM_DOMAIN: wiki.giljae.com
-          GITHUB_REPO: ${{ github.repository }}
-
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: _site
+          path: _build/html
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: https://wiki.giljae.com
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/deploy-pages@v5
         id: deployment

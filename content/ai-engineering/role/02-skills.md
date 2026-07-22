@@ -1,5 +1,9 @@
+---
+tags: [ai-engineer, skills]
+description: AI 엔지니어에게 필요한 기술 분석
+---
+
 # AI 엔지니어 기술 분석
-* 직무는 AI(RAG, 에이전트 등) 관련 업무를 직접 수행
 * GenAI 기술 외에도 다른 기술이 필요. Fullstack 개발자 역할
 * AI 엔지니어링 직무는 ML 지식을 요구함
 

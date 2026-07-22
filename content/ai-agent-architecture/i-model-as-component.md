@@ -1,3 +1,8 @@
+---
+tags: [ai-agent, llm, transformer, architecture]
+description: 언어 모델의 내부 구성 요소와 아키텍처
+---
+
 # I. 모델의 구성 요소
 ## 1. 언어 모델의 아키텍처
 ### 1.1 모델의 내부 구조

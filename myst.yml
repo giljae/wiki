@@ -1,0 +1,75 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: 6ee09066-e995-467c-b0b8-6d2d3edd77a2
+  title: "Giljae's Digital Garden"
+  description: 개인 지식 관리 및 AI 엔지니어링 위키
+  keywords: [wiki, ai, engineering, digital-garden, llm]
+  authors:
+    - name: Giljae
+      url: https://giljae.com
+  github: https://github.com/giljae/wiki
+  toc:
+    - file: content/intro
+    - file: content/_generated/recent
+    - file: content/_generated/sitemap
+    - file: content/_generated/tags
+    - title: Getting Started
+      children:
+        - file: content/getting-started
+        - file: content/plugins
+    - title: AI Agent Architecture
+      children:
+        - file: content/ai-agent-architecture/architecture-overview
+          children:
+            - file: content/ai-agent-architecture/i-model-as-component
+    - title: AI Engineering
+      children:
+        - file: content/ai-engineering/engineering-overview
+          children:
+            - file: content/ai-engineering/learning-path
+            - title: Role
+              children:
+                - file: content/ai-engineering/role/01-role
+                - file: content/ai-engineering/role/02-skills
+                - file: content/ai-engineering/role/03-responsibilities
+                - file: content/ai-engineering/role/04-use-cases
+    - title: Evals for AI Agents
+      children:
+        - file: content/evals-for-ai-agents/evals-overview
+          children:
+            - file: content/evals-for-ai-agents/1-introduction-to-evals
+            - file: content/evals-for-ai-agents/2-human-in-the-loop-evaluation
+            - file: content/evals-for-ai-agents/3-llm-as-a-judge
+            - file: content/evals-for-ai-agents/4-programmatic-rule-evaluations
+    - title: Notes
+      children:
+        - file: content/notes/notes-overview
+          children:
+            - file: content/notes/about
+site:
+  template: book-theme
+  nav:
+    - title: Blog
+      url: https://giljae.com
+    - title: Recent
+      url: /recent
+    - title: Index
+      url: /sitemap
+    - title: Tags
+      url: /tags
+  options:
+    favicon: assets/favicon.svg
+    logo: assets/favicon.svg
+    logo_text: "Giljae's Digital Garden"
+  parts:
+    footer: |
+      <div class="text-center text-sm text-gray-500 dark:text-gray-400 py-6 border-t border-gray-200 dark:border-gray-700">
+        © 2026 Giljae Joo
+      </div>
+    primary_sidebar_footer: |
+      <div class="text-center text-xs text-gray-400">
+        © 2026 Giljae Joo
+      </div>
+  domains:
+    - wiki.giljae.com

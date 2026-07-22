@@ -1,8 +1,0 @@
-_site/
-.github/
-scripts/
-Gemfile
-Gemfile.lock
-docker-compose.yml
-.gitignore
-README.md

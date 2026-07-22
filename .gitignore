@@ -2,3 +2,10 @@ _site/
 *.gem
 .bundle/
 vendor/bundle/
+
+# Jupyter Book
+_build/
+
+# MyST build outputs
+_build
+content/_generated/
