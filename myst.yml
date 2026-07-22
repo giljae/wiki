@@ -26,14 +26,11 @@ project:
     - title: AI Engineering
       children:
         - file: content/ai-engineering/engineering-overview
-          children:
-            - file: content/ai-engineering/learning-path
-            - title: Role
-              children:
-                - file: content/ai-engineering/role/01-role
-                - file: content/ai-engineering/role/02-skills
-                - file: content/ai-engineering/role/03-responsibilities
-                - file: content/ai-engineering/role/04-use-cases
+        - file: content/ai-engineering/learning-path
+        - file: content/ai-engineering/role/01-role
+        - file: content/ai-engineering/role/02-skills
+        - file: content/ai-engineering/role/03-responsibilities
+        - file: content/ai-engineering/role/04-use-cases
     - title: Evals for AI Agents
       children:
         - file: content/evals-for-ai-agents/evals-overview
