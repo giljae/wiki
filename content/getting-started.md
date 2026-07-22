@@ -97,7 +97,7 @@ GitHub에서 각 `.md` 파일을 직접 수정하고 커밋하면 GitHub Actions
 
 ```
 content/
-├── intro.md                    # 메인 페이지
+├── home.md                    # 메인 페이지
 ├── getting-started.md          # 시작 가이드
 ├── notes/
 │   ├── intro.md                # notes 섹션 소개

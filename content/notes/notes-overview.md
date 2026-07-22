@@ -10,4 +10,4 @@ description: notes 섹션 모음
 ## 페이지
 
 - [About](about.md)
-- [홈](../../intro.md)으로 돌아가기
+- [홈](../../home.md)으로 돌아가기
