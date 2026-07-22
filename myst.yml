@@ -53,11 +53,11 @@ site:
     - title: Blog
       url: https://giljae.com
     - title: Recent
-      url: /recent
+      url: /recent/
     - title: Index
-      url: /sitemap
+      url: /sitemap/
     - title: Tags
-      url: /tags
+      url: /tags/
   options:
     favicon: assets/favicon.svg
     logo: assets/favicon.svg
