@@ -1,271 +1,106 @@
 #!/usr/bin/env python3
-"""
-Post-build: strip React, inject static sidebar, apply single-scroll layout.
-"""
+"""Post-build: strip React, inject static sidebar + vanilla JS, two-column layout."""
 import glob, re, sys, json, hashlib
 
 build_dir = sys.argv[1] if len(sys.argv) > 1 else '_build/html'
 html_files = glob.glob(f'{build_dir}/**/index.html', recursive=True)
 
-# Read site config
 with open(build_dir.replace('/html', '/site/config.json')) as f:
     config = json.load(f)
-project = config['projects'][0]
-pages = project['pages']
-toc = project['toc']
+pages = config['projects'][0]['pages']
+toc = config['projects'][0]['toc']
 
-# Build slug -> title map
-slug_info = {}
-for p in pages:
-    if p.get('slug'):
-        slug_info[p['slug']] = p.get('title', p['slug'])
+slug_info = {p['slug']: p.get('title', p['slug']) for p in pages if p.get('slug')}
 
-def file_to_slug(file_path):
-    if not file_path:
-        return None
-    name = file_path.replace('content/', '').replace('.md', '')
-    parts = name.split('/')
-    filename = parts[-1]
-    if filename in slug_info:
-        return filename
+def file_to_slug(fp):
+    if not fp: return None
+    name = fp.replace('content/', '').replace('.md', '')
+    filename = name.split('/')[-1]
     for slug in slug_info:
-        if filename.endswith(slug) or slug.endswith(filename):
+        if filename == slug or slug in filename or filename.endswith(slug):
             return slug
-        if slug in filename:
-            return slug
-    cleaned = re.sub(r'^\d+-', '', filename)
-    if cleaned in slug_info:
-        return cleaned
+    c = re.sub(r'^\d+-', '', filename)
+    if c in slug_info: return c
     for slug in slug_info:
-        if cleaned == slug or slug == cleaned:
-            return slug
+        if c == slug: return slug
     return filename
 
-def build_sidebar_items(items, depth=0):
+def build_sidebar(items):
     html = ''
-    base_url = ''
     for item in items:
-        if not isinstance(item, dict):
-            continue
+        if not isinstance(item, dict): continue
         title = item.get('title', '')
-        file_path = item.get('file', '')
+        fp = item.get('file', '')
         children = item.get('children', [])
-        
-        if file_path:
-            slug = file_to_slug(file_path)
-            if not title:
-                title = slug_info.get(slug, slug)
-            if slug == 'home' or file_path == 'content/home':
-                title = "Giljae's Digital Garden"
-            url_path = f'/{slug}' if slug else '#'
-            html += f'<a title="{title}" href="{url_path}">{title}</a>\n'
-        
+        if fp:
+            slug = file_to_slug(fp)
+            if not title: title = slug_info.get(slug, slug)
+            if slug in ('home',) or fp == 'content/home': title = "Giljae's Digital Garden"
+            html += f'<a href="/{slug}" title="{title}">{title}</a>\n'
         if children:
-            uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:8]
-            html += f'<details open class="sidebar-folder">\n'
-            html += f'<summary>{title}</summary>\n'
-            html += build_sidebar_items(children, depth + 1)
-            html += '</details>\n'
+            uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]
+            html += f'<details open class="sf"><summary>{title}</summary>\n{build_sidebar(children)}</details>\n'
     return html
 
-sidebar_html = build_sidebar_items(toc)
-item_count = sidebar_html.count('href=')
-print(f'Loaded {len(pages)} pages, generated {item_count} sidebar items')
+sidebar_html = build_sidebar(toc)
+print(f'{len(slug_info)} pages, {sidebar_html.count("href=")} sidebar items')
 
-LAYOUT_CSS = """
-<style>
-/* Single scroll + two-column layout */
-html, body {
-  height: auto !important;
-  overflow: visible !important;
-  scroll-padding: 0 !important;
-}
+CSS = """<style>
+html,body{height:auto!important;overflow:visible!important;scroll-padding:0!important}
+body{display:grid!important;grid-template-columns:280px 1fr!important}
+.myst-top-nav{position:relative!important;grid-column:1/-1!important}
+.myst-primary-sidebar{position:relative!important;display:block!important;width:280px!important;grid-column:1!important;padding:16px 16px 16px 24px!important;height:auto!important;overflow:visible!important}
+.myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
+.myst-primary-sidebar-nav{overflow:visible!important}
+.myst-primary-sidebar-footer{display:none!important}
+main.article-grid{display:block!important;grid-column:2!important;padding:20px 32px!important;margin:0!important;max-width:none!important}
+article{max-width:900px!important}
+footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}.myst-fm-block{padding-top:0!important}
+.sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
+.myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important}
+.myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
+details.sf{margin:2px 0}details.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none}
+details.sf>summary::-webkit-details-marker{display:none}
+details.sf>summary::before{content:"\\25B6";display:inline-block;margin-right:6px;font-size:.7rem;transition:transform .2s}
+details.sf[open]>summary::before{transform:rotate(90deg)}
+details.sf>summary:hover{background:rgba(0,0,0,.06)}
+details.sf a{padding-left:24px!important}
+.dark .myst-toc a:hover{background:rgba(255,255,255,.1)}
+.dark details.sf>summary:hover{background:rgba(255,255,255,.1)}
+.dark details.sf>summary{color:#60a5fa}
+</style>"""
 
-/* Top navbar - non-sticky */
-.myst-top-nav {
-  position: relative !important;
-  top: auto !important;
-  z-index: 10;
-}
-
-/* Flex container for sidebar + content */
-body {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Two-column row: sidebar + content */
-.myst-primary-sidebar {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  height: auto !important;
-  overflow: visible !important;
-  display: block !important;
-  max-width: 280px !important;
-  min-width: 240px !important;
-  float: left !important;
-  padding: 16px 8px 16px 16px !important;
-}
-
-.myst-primary-sidebar-pointer {
-  display: block !important;
-  height: auto !important;
-  overflow: visible !important;
-}
-
-.myst-primary-sidebar-nav {
-  overflow: visible !important;
-}
-
-.myst-primary-sidebar-footer {
-  display: none !important;
-}
-
-/* Main content - takes remaining width */
-main.article-grid {
-  display: block !important;
-  margin-left: 280px !important;
-  padding: 24px !important;
-  max-width: none !important;
-}
-
-article.article-grid {
-  display: block !important;
-  max-width: 900px !important;
-}
-
-.myst-fm-block {
-  padding-top: 0 !important;
-}
-
-/* Footer */
-footer.article.footer {
-  margin-left: 280px !important;
-  padding: 20px 24px !important;
-}
-
-/* Sidebar nav links */
-.myst-primary-sidebar-topnav a {
-  display: inline-block !important;
-  margin: 2px 4px !important;
-}
-
-.myst-toc a {
-  display: block;
-  padding: 6px 8px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-  font-size: 0.9rem;
-}
-.myst-toc a:hover {
-  background: rgba(0,0,0,0.05);
-}
-
-/* Sidebar folder styling */
-details.sidebar-folder {
-  margin: 2px 0;
-}
-details.sidebar-folder > summary {
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #1a56db;
-  list-style: none;
-}
-details.sidebar-folder > summary::-webkit-details-marker {
-  display: none;
-}
-details.sidebar-folder > summary:before {
-  content: "▶";
-  display: inline-block;
-  margin-right: 6px;
-  font-size: 0.7rem;
-  transition: transform 0.2s;
-}
-details.sidebar-folder[open] > summary:before {
-  transform: rotate(90deg);
-}
-details.sidebar-folder > summary:hover {
-  background: rgba(0,0,0,0.05);
-}
-details.sidebar-folder a {
-  padding-left: 24px !important;
-}
-
-/* Dark mode overrides */
-.dark .myst-toc a:hover {
-  background: rgba(255,255,255,0.08);
-}
-.dark details.sidebar-folder > summary:hover {
-  background: rgba(255,255,255,0.08);
-}
-</style>
-"""
-
-VANILLA_JS = """<script>
+JS = """<script>
 (function(){
-  var k="myst:theme",h=document.documentElement,b=document.querySelector(".myst-theme-button");
-  var s=localStorage.getItem(k)||(window.matchMedia("(prefers-color-scheme:light)").matches?"light":"dark");
-  h.classList.add(s);
-  b&&b.addEventListener("click",function(){
-    var n=h.classList.contains("dark")?"light":"dark";
-    h.classList.remove("dark","light");h.classList.add(n);localStorage.setItem(k,n);
-  });
-  // Icon visibility
-  !function(){
-    var h=document.documentElement;
-    new MutationObserver(function(){u();}).observe(h,{attributes:true,attributeFilter:["class"]});
-    function u(){var d=h.classList.contains("dark");
-      document.querySelectorAll(".myst-theme-moon-icon").forEach(function(e){e.style.display=d?"block":"none";});
-      document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.display=d?"none":"block";});
-    }
-    u();
-  }();
+var k="myst:theme",h=document.documentElement,b=document.querySelector(".myst-theme-button");
+var s=localStorage.getItem(k)||(window.matchMedia("(prefers-color-scheme:light)").matches?"light":"dark");
+h.classList.add(s);b&&b.addEventListener("click",function(){
+var n=h.classList.contains("dark")?"light":"dark";h.classList.remove("dark","light");h.classList.add(n);localStorage.setItem(k,n);});
+new MutationObserver(function u(){var d=h.classList.contains("dark");
+document.querySelectorAll(".myst-theme-moon-icon").forEach(function(e){e.style.display=d?"block":"none"});
+document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.display=d?"none":"block"});u()}).observe(h,{attributes:true,attributeFilter:["class"]});
 })();
 </script>"""
 
-count = 0
-for html_file in html_files:
-    with open(html_file) as f:
-        html = f.read()
-    if '<!-- PB -->' in html:
-        continue
-    
-    # Remove React scripts
+n = 0
+for f in html_files:
+    with open(f) as fp:
+        html = fp.read()
+    if '<!--PB-->' in html: continue
     html = re.sub(r'<script type="module" async="">.*?</script>', '', html, flags=re.DOTALL, count=1)
     html = re.sub(r'<script>window\.__remixContext\s*=.*?</script>', '', html, flags=re.DOTALL, count=1)
     html = re.sub(r'\n\s*<link rel="modulepreload"[^>]*/>', '', html)
     html = re.sub(r'<dialog id="myst-no-css">.*?</dialog>', '', html, flags=re.DOTALL, count=1)
-    
-    # Fix nav links: remove target=_blank for internal links
-    html = re.sub(
-        r'href="https://wiki\.giljae\.com/([^"]+)" target="_blank" rel="noopener noreferrer"',
-        r'href="/\1"',
-        html
-    )
-    
-    # Inject layout CSS before </head>
-    html = html.replace('</head>', LAYOUT_CSS + '\n</head>', 1)
-    
-    # Replace sidebar TOC
-    toc_start = html.find('<div class="myst-toc w-full px-1 dark:text-white">')
-    if toc_start > 0:
-        # Find the end of the sidebar nav (before footer)
-        nav_end = html.find('</div></nav></div>', toc_start)
-        if nav_end > 0:
-            new_toc = f'<div class="myst-toc w-full px-1 dark:text-white">\n{sidebar_html}</div>'
-            html = html[:toc_start] + new_toc + html[nav_end:]
-    
-    html = html.replace('</body>', VANILLA_JS + '\n</body>', 1)
+    html = re.sub(r'href="https://wiki\.giljae\.com/([^"]+)" target="_blank" rel="noopener noreferrer"', r'href="/\1"', html)
+    html = html.replace(' style="top:60px"', '')
+    html = html.replace('</head>', CSS + '\n</head>', 1)
+    ts = html.find('<div class="myst-toc w-full px-1 dark:text-white">')
+    if ts > 0:
+        ne = html.find('</div></nav></div>', ts)
+        if ne > 0: html = html[:ts] + f'<div class="myst-toc w-full px-1 dark:text-white">\n{sidebar_html}</div>' + html[ne:]
+    html = html.replace('</body>', JS + '\n</body>', 1)
     html = html.replace('<!-- PB -->', '')
-    html = re.sub(r'\n{3,}', '\n\n', html)
-    
-    with open(html_file, 'w') as f:
-        f.write(html)
-    count += 1
-
-print(f'Processed {count} / {len(html_files)} files')
+    html = re.sub(r'\n{4,}', '\n\n', html)
+    with open(f, 'w') as fp: fp.write(html)
+    n += 1
+print(f'Processed {n} files')
