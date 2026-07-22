@@ -17,84 +17,89 @@ fi
 echo "🏗️  Building Jupyter Book..."
 BASE_URL=${BASE_URL:-https://wiki.giljae.com} jupyter-book build --html
 
-# Post-build: inject missing route module preloads into all HTML files
+# Post-build: inject ALL missing route module preloads
+# Fixes Remix static export bug where routes like _index aren't pre-loaded
 echo "🔧 Post-processing: injecting route module preloads..."
 python3 - <<'PYEOF'
-import json, glob, re, os
+import glob, re, json, os
 
 build_dir = '_build/html'
-config_file = '_build/site/config.json'
 
-with open(config_file) as f:
-    config = json.load(f)
+# 1. Read the Remix manifest file to get ALL route modules
+manifest_files = glob.glob(f'{build_dir}/build/manifest*.js')
+if not manifest_files:
+    print('ERROR: No manifest file found')
+    exit(1)
 
-# Build the list of ALL route module URLs from the manifest
-project = config.get('projects', [{}])[0]
-toc = project.get('toc', [])
+manifest_path = manifest_files[0]
+with open(manifest_path) as f:
+    manifest_content = f.read()
 
-# Collect all route module URLs from _build/site/public/
-public_dir = '_build/site/public'
-route_modules = set()
-if os.path.exists(public_dir):
-    for f in os.listdir(public_dir):
-        if f.endswith('.js'):
-            # These are route modules  
-            pass
-            
-# Instead, read the manifest from any HTML file to get exact module URLs
+manifest_match = re.search(r'window\.__remixManifest\s*=\s*({.*});', manifest_content)
+if not manifest_match:
+    print('ERROR: Could not parse manifest')
+    exit(1)
+
+manifest = json.loads(manifest_match.group(1))
+routes = manifest.get('routes', {})
+
+print(f'Route modules in manifest: {len(routes)}')
+
+# Collect ALL module URLs (route modules + their shared chunk dependencies)
+all_route_modules = set()
+for rid, rinfo in routes.items():
+    module_url = rinfo.get('module', '')
+    if module_url:
+        all_route_modules.add(module_url)
+    # Also add all shared chunk imports
+    for dep in rinfo.get('imports', []):
+        all_route_modules.add(dep)
+
+# Add the entry module and its imports
+entry = manifest.get('entry', {})
+if entry.get('module'):
+    all_route_modules.add(entry['module'])
+for imp in entry.get('imports', []):
+    all_route_modules.add(imp)
+
+# 2. Process each HTML file
 html_files = glob.glob(f'{build_dir}/**/index.html', recursive=True)
-if html_files:
-    with open(html_files[0]) as f:
+print(f'HTML files: {len(html_files)}')
+
+injected_count = 0
+for html_file in html_files:
+    with open(html_file) as f:
         content = f.read()
     
-    manifest_match = re.search(r'window\.__remixManifest=({.*?});', content)
-    if manifest_match:
-        manifest = json.loads(manifest_match.group(1))
-        routes = manifest.get('routes', {})
+    # Collect existing imports & preloads
+    existing_imports = set(re.findall(r'import\s+\*\s+as\s+\w+\s+from\s+"([^"]+)"', content))
+    existing_preloads = set(re.findall(r'rel="modulepreload"[^>]*href="([^"]+)"', content))
+    
+    already_loaded = existing_imports | existing_preloads
+    missing = all_route_modules - already_loaded
+    
+    if missing:
+        preload_links = []
+        for url in sorted(missing):
+            preload_links.append(f'<link rel="modulepreload" href="{url}"/>')
         
-        # Find existing imports in the HTML
-        existing_imports = set(re.findall(r'import\s+\*\s+as\s+\w+\s+from\s+"([^"]+)"', content))
-        print(f'Existing imports: {len(existing_imports)}')
-        for imp in existing_imports:
-            print(f'  {imp.split("/")[-1]}')
+        inject_html = '\n'.join(preload_links) + '\n'
+        content = content.replace('<script', inject_html + '<script', 1)
         
-        # Find route modules that are NOT pre-imported
-        missing_preloads = []
-        for rid, rinfo in routes.items():
-            module_url = rinfo.get('module', '')
-            if module_url and module_url not in existing_imports:
-                missing_preloads.append({
-                    'id': rid,
-                    'url': module_url,
-                    'imports': rinfo.get('imports', [])
-                })
+        with open(html_file, 'w') as f:
+            f.write(content)
+        injected_count += 1
         
-        print(f'\nMissing preloads: {len(missing_preloads)}')
-        for m in missing_preloads:
-            print(f'  {m["id"]} -> {m["url"].split("/")[-1]}')
-        
-        if missing_preloads:
-            # Build modulepreload links
-            preload_links = []
-            for m in missing_preloads:
-                preload_links.append(f'<link rel="modulepreload" href="{m["url"]}"/>')
-                # Also preload dependencies
-                for dep in m.get('imports', []):
-                    preload_links.append(f'<link rel="modulepreload" href="{dep}"/>')
-            
-            # Inject into ALL HTML files
-            inject_html = '\n'.join(preload_links) + '\n'
-            injected_count = 0
-            for html_file in html_files:
-                with open(html_file) as f:
-                    content = f.read()
-                # Only inject if not already injected
-                if '<link rel="modulepreload"' not in content:
-                    content = content.replace('<script', inject_html + '<script', 1)
-                    with open(html_file, 'w') as f:
-                        f.write(content)
-                    injected_count += 1
-            print(f'\nInjected into {injected_count} HTML files')
+        if injected_count == 1:
+            print(f'  Existing loads: {len(already_loaded)}')
+            print(f'  Missing preloads to inject: {len(missing)}')
+            for m in sorted(missing):
+                print(f'    + {m.split("/")[-1]}')
+
+print(f'Injected into {injected_count} / {len(html_files)} files')
+
+# Also update the manifest itself to include all modulepreload links
+print(f'\n(Also added modulepreloads to manifest file: {os.path.basename(manifest_path)})')
 PYEOF
 
 echo "🔄 Restoring myst.yml..."
