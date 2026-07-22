@@ -150,7 +150,12 @@ for html_file in html_files:
     html = re.sub(r'\n\s*<link rel="modulepreload"[^>]*/>', '', html)
     html = re.sub(r'<dialog id="myst-no-css">.*?</dialog>', '', html, flags=re.DOTALL, count=1)
     
-    # Replace sidebar TOC with generated version
+    # Fix nav links: remove target="_blank" from internal links (keep for external)
+    html = re.sub(
+        r'href="https://wiki\.giljae\.com/([^"]+)" target="_blank" rel="noopener noreferrer"',
+        r'href="/\1"',
+        html
+    )
     toc_start = html.find('<div class="myst-toc w-full px-1 dark:text-white">')
     toc_end = html.find('</div></nav></div><div class="myst-primary-sidebar-footer', toc_start)
     if toc_start > 0 and toc_end > 0:
