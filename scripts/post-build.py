@@ -27,18 +27,25 @@ VANILLA_JS = """<script>
   })();
   // 2. Sidebar collapsible
   (function(){
-    document.querySelectorAll(".myst-primary-sidebar-toc button").forEach(function(btn){
-      btn.addEventListener("click",function(){
-        var id=this.getAttribute("aria-controls");
-        var target=document.getElementById(id);
-        if(!target)return;
-        var open=target.getAttribute("data-state")==="open";
-        target.setAttribute("data-state",open?"closed":"open");
-        this.setAttribute("aria-expanded",!open);
-        if(open)target.setAttribute("hidden","");else target.removeAttribute("hidden");
-        var svg=this.querySelector("svg");
-        if(svg)svg.style.transform=open?"rotate(0deg)":"rotate(90deg)";
-      });
+    function toggleFolder(el){
+      var btn=el.tagName==="BUTTON"?el:el.parentElement.querySelector("button");
+      if(!btn)return;
+      var id=btn.getAttribute("aria-controls");
+      var target=document.getElementById(id);
+      if(!target)return;
+      var open=target.getAttribute("data-state")==="open";
+      target.setAttribute("data-state",open?"closed":"open");
+      btn.setAttribute("aria-expanded",!open);
+      if(open)target.setAttribute("hidden","");else target.removeAttribute("hidden");
+      var svg=btn.querySelector("svg");
+      if(svg)svg.style.transform=open?"rotate(0deg)":"rotate(90deg)";
+    }
+    // Handle clicks on both button and title div
+    document.querySelectorAll(".myst-primary-sidebar-toc .myst-toc-item").forEach(function(row){
+      var btn=row.querySelector("button");
+      var title=row.querySelector("div[title]");
+      if(btn)btn.addEventListener("click",function(){toggleFolder(this);});
+      if(title)title.addEventListener("click",function(){toggleFolder(this);});
     });
     // Open all by default
     document.querySelectorAll(".myst-primary-sidebar-toc [data-state=closed]").forEach(function(c){
