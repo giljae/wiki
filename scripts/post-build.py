@@ -69,8 +69,19 @@ body{display:block!important}
 .myst-search-bar,.myst-search-text-placeholder,.myst-search-shortcut{display:none!important}
 /* Sidebar hidden by default, shown via hamburger */
 .myst-primary-sidebar{display:none!important}
-.myst-primary-sidebar.open{display:block!important;position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:1000!important;background:white!important;overflow-y:auto!important;padding:56px 16px 16px!important}
-.dark .myst-primary-sidebar.open{background:#1c1917!important}
+.myst-primary-sidebar.open{display:block!important;position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:1000!important;background:transparent!important;overflow:hidden!important;padding:0!important}
+.dark .myst-primary-sidebar.open{background:transparent!important}
+/* Sidebar panel (the actual nav) */
+.myst-sidebar-panel{position:fixed!important;top:0!important;left:0!important;width:85%!important;max-width:320px!important;height:100%!important;z-index:1001!important;background:white!important;overflow-y:auto!important;padding:56px 16px 24px!important;box-shadow:2px 0 12px rgba(0,0,0,.15)!important}
+.dark .myst-sidebar-panel{background:#1c1917!important}
+/* Close button in sidebar */
+.myst-sidebar-close{position:fixed!important;top:10px!important;right:15px!important;z-index:1002!important;background:none!important;border:none!important;font-size:28px!important;cursor:pointer!important;color:#666!important;padding:4px 8px!important;line-height:1!important}
+.myst-sidebar-close:hover{color:#000!important}
+.dark .myst-sidebar-close{color:#999!important}
+.dark .myst-sidebar-close:hover{color:#fff!important}
+/* Overlay background */
+.myst-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;background:rgba(0,0,0,.3)}
+.myst-overlay.show{display:block}
 .myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
 .myst-primary-sidebar-nav{overflow:visible!important}
 .myst-primary-sidebar-footer{display:none!important}
@@ -113,8 +124,30 @@ document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.di
 var btn=document.querySelector(".myst-top-nav-menu-button");
 var sidebar=document.querySelector(".myst-primary-sidebar");
 if(!btn||!sidebar)return;
-btn.addEventListener("click",function(){sidebar.classList.toggle("open");});
-sidebar.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){sidebar.classList.remove("open");});});
+// Create overlay
+var overlay=document.createElement("div");
+overlay.className="myst-overlay";
+document.body.appendChild(overlay);
+// Create sidebar panel (clone sidebar content into it)
+var panel=document.createElement("div");
+panel.className="myst-sidebar-panel";
+var pointer=sidebar.querySelector(".myst-primary-sidebar-pointer");
+if(pointer)panel.innerHTML=pointer.innerHTML;
+// Create close button
+var closeBtn=document.createElement("button");
+closeBtn.className="myst-sidebar-close";
+closeBtn.innerHTML="\u00D7";
+document.body.appendChild(closeBtn);
+document.body.appendChild(panel);
+function open(){overlay.classList.add("show");panel.style.display="block";closeBtn.style.display="block";document.body.style.overflow="hidden";}
+function close(){overlay.classList.remove("show");panel.style.display="none";closeBtn.style.display="none";document.body.style.overflow="";}
+close();
+btn.addEventListener("click",function(){if(panel.style.display==="none")open();else close();});
+overlay.addEventListener("click",close);
+closeBtn.addEventListener("click",close);
+panel.querySelectorAll("a").forEach(function(a){a.addEventListener("click",close);});
+// Escape key
+document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});
 })();
 })();
 </script>"""
