@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post-build: strip React, inject static sidebar + vanilla JS, two-column layout."""
+"""Post-build: strip React, inject static sidebar + vanilla JS, responsive layout."""
 import glob, re, sys, json, hashlib
 
 build_dir = sys.argv[1] if len(sys.argv) > 1 else '_build/html'
@@ -47,17 +47,44 @@ print(f'{len(slug_info)} pages, {sidebar_html.count("href=")} sidebar items')
 
 CSS = """<style>
 html,body{height:auto!important;overflow:visible!important;scroll-padding:0!important}
-body{display:grid!important;grid-template-columns:280px 1fr!important}
+/* Desktop: two-column grid */
+@media(min-width:768px){
+body{display:grid!important;grid-template-columns:260px 1fr!important}
 .myst-top-nav{position:relative!important;grid-column:1/-1!important}
-.myst-primary-sidebar{position:relative!important;display:block!important;width:280px!important;grid-column:1!important;padding:16px 16px 16px 24px!important;height:auto!important;overflow:visible!important}
+.myst-primary-sidebar{position:relative!important;display:block!important;width:260px!important;grid-column:1!important;padding:16px 12px 16px 20px!important;height:auto!important;overflow:visible!important}
 .myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
 .myst-primary-sidebar-nav{overflow:visible!important}
 .myst-primary-sidebar-footer{display:none!important}
 main.article-grid{display:block!important;grid-column:2!important;padding:20px 32px!important;margin:0!important;max-width:none!important}
-article{max-width:900px!important}
-footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}.myst-fm-block{padding-top:0!important}
-.sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
+footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}
 .myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important}
+}
+/* Mobile: single column */
+@media(max-width:767px){
+body{display:block!important}
+.myst-top-nav{position:relative!important;padding:6px 10px!important;min-height:auto!important}
+.myst-top-nav-bar{gap:2px!important}
+.myst-home-link{margin-left:0!important}
+.myst-home-link span{font-size:.95rem!important}
+.myst-search-bar,.myst-search-text-placeholder,.myst-search-shortcut{display:none!important}
+.myst-primary-sidebar{position:relative!important;display:block!important;width:auto!important;padding:4px 10px!important;height:auto!important;overflow:visible!important}
+.myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
+.myst-primary-sidebar-nav{overflow:visible!important}
+.myst-primary-sidebar-footer{display:none!important}
+/* Top nav links as horizontal scrollable strip */
+.myst-primary-sidebar-topnav{overflow-x:auto!important;white-space:nowrap!important;-webkit-overflow-scrolling:touch!important}
+.myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important;font-size:.82rem!important}
+/* Hide TOC folders on mobile */
+.myst-primary-sidebar-toc{display:none!important}
+/* Main content */
+main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
+footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
+.myst-fm-block{margin-bottom:8px!important}
+.myst-fm-block h1{font-size:1.3rem!important}
+article{font-size:.95rem!important}
+}
+/* Common: fix sticky/hidden */
+.sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
 .myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
 details.sf{margin:2px 0}details.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none}
 details.sf>summary::-webkit-details-marker{display:none}
@@ -76,9 +103,9 @@ var k="myst:theme",h=document.documentElement,b=document.querySelector(".myst-th
 var s=localStorage.getItem(k)||(window.matchMedia("(prefers-color-scheme:light)").matches?"light":"dark");
 h.classList.add(s);b&&b.addEventListener("click",function(){
 var n=h.classList.contains("dark")?"light":"dark";h.classList.remove("dark","light");h.classList.add(n);localStorage.setItem(k,n);});
-new MutationObserver(function u(){var d=h.classList.contains("dark");
+new MutationObserver(function(){var d=h.classList.contains("dark");
 document.querySelectorAll(".myst-theme-moon-icon").forEach(function(e){e.style.display=d?"block":"none"});
-document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.display=d?"none":"block"});u()}).observe(h,{attributes:true,attributeFilter:["class"]});
+document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.display=d?"none":"block"});}).observe(h,{attributes:true,attributeFilter:["class"]});
 })();
 </script>"""
 
