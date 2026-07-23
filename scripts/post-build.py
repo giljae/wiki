@@ -47,17 +47,22 @@ print(f'{len(slug_info)} pages, {sidebar_html.count("href=")} sidebar items')
 
 CSS = """<style>
 html,body{height:auto!important;overflow:visible!important;scroll-padding:0!important}
+/* Desktop */
 @media(min-width:768px){
-body{display:grid!important;grid-template-columns:260px 1fr!important}
+body{display:grid!important;grid-template-columns:260px 1fr!important;transition:grid-template-columns .3s}
+body.sidebar-collapsed{grid-template-columns:0 1fr!important}
 .myst-top-nav{position:relative!important;grid-column:1/-1!important}
 .myst-primary-sidebar{position:relative!important;display:block!important;width:260px!important;grid-column:1!important;padding:16px 12px 16px 20px!important;height:auto!important;overflow:visible!important}
+body.sidebar-collapsed .myst-primary-sidebar{overflow:hidden!important;padding:0!important;width:0!important}
 .myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
+body.sidebar-collapsed .myst-primary-sidebar-pointer{display:none!important}
 .myst-primary-sidebar-nav{overflow:visible!important}
 .myst-primary-sidebar-footer{display:none!important}
 main.article-grid{display:block!important;grid-column:2!important;padding:20px 32px!important;margin:0!important;max-width:none!important}
 footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}
 .myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important}
 }
+/* Mobile */
 @media(max-width:767px){
 body{display:block!important}
 .myst-top-nav{position:relative!important;padding:6px 10px!important;min-height:auto!important}
@@ -66,14 +71,10 @@ body{display:block!important}
 .myst-home-link span{font-size:.95rem!important}
 .myst-search-bar,.myst-search-text-placeholder,.myst-search-shortcut{display:none!important}
 .myst-primary-sidebar{display:none!important}
-.myst-primary-sidebar.open{display:block!important;position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:1000!important;background:transparent!important;overflow:hidden!important;padding:0!important}
-.dark .myst-primary-sidebar.open{background:transparent!important}
 .myst-sidebar-panel{position:fixed!important;top:0!important;left:0!important;width:85%!important;max-width:320px!important;height:100%!important;z-index:1001!important;background:white!important;overflow-y:auto!important;padding:56px 16px 24px!important;box-shadow:2px 0 12px rgba(0,0,0,.15)!important}
 .dark .myst-sidebar-panel{background:#1c1917!important}
 .myst-sidebar-close{position:fixed!important;top:10px!important;right:15px!important;z-index:1002!important;background:none!important;border:none!important;font-size:28px!important;cursor:pointer!important;color:#666!important;padding:4px 8px!important;line-height:1!important}
-.myst-sidebar-close:hover{color:#000!important}
-.dark .myst-sidebar-close{color:#999!important}
-.dark .myst-sidebar-close:hover{color:#fff!important}
+.myst-sidebar-close:hover{color:#000!important}.dark .myst-sidebar-close{color:#999!important}.dark .myst-sidebar-close:hover{color:#fff!important}
 .myst-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;background:rgba(0,0,0,.3)}
 .myst-overlay.show{display:block}
 .myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
@@ -81,17 +82,13 @@ body{display:block!important}
 .myst-primary-sidebar-footer{display:none!important}
 .myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
 .myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
-details.sf{margin:4px 0}
-details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
-details.sf a{padding-left:28px!important}
+details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}details.sf a{padding-left:28px!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
-.myst-fm-block{margin-bottom:8px!important}
-.myst-fm-block h1{font-size:1.3rem!important}
-article{font-size:.95rem!important}
+.myst-fm-block{margin-bottom:8px!important}.myst-fm-block h1{font-size:1.3rem!important}article{font-size:.95rem!important}
 }
+/* Common */
 .sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
-/* Hide search shortcut everywhere since search is disabled */
 .myst-search-shortcut,.myst-search-shortcut kbd,.myst-search-shortcut div{display:none!important}
 .myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
 details.sf{margin:2px 0}details.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none}
@@ -118,19 +115,25 @@ document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.di
 var btn=document.querySelector(".myst-top-nav-menu-button");
 var sidebar=document.querySelector(".myst-primary-sidebar");
 if(!btn||!sidebar)return;
+var mobile=function(){return window.innerWidth<768;};
+// Mobile panel setup
 var overlay=document.createElement("div");overlay.className="myst-overlay";document.body.appendChild(overlay);
 var panel=document.createElement("div");panel.className="myst-sidebar-panel";
-var pointer=sidebar.querySelector(".myst-primary-sidebar-pointer");
-if(pointer)panel.innerHTML=pointer.innerHTML;
+var ptr=sidebar.querySelector(".myst-primary-sidebar-pointer");
+if(ptr)panel.innerHTML=ptr.innerHTML;
 var closeBtn=document.createElement("button");closeBtn.className="myst-sidebar-close";closeBtn.innerHTML="\\u00D7";
 document.body.appendChild(closeBtn);document.body.appendChild(panel);
-function open(){overlay.classList.add("show");panel.style.display="block";closeBtn.style.display="block";document.body.style.overflow="hidden";}
-function close(){overlay.classList.remove("show");panel.style.display="none";closeBtn.style.display="none";document.body.style.overflow="";}
-close();
-btn.addEventListener("click",function(){if(panel.style.display==="none")open();else close();});
-overlay.addEventListener("click",close);closeBtn.addEventListener("click",close);
-panel.querySelectorAll("a").forEach(function(a){a.addEventListener("click",close);});
-document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});
+function openM(){overlay.classList.add("show");panel.style.display="block";closeBtn.style.display="block";document.body.style.overflow="hidden";}
+function closeM(){overlay.classList.remove("show");panel.style.display="none";closeBtn.style.display="none";document.body.style.overflow="";}
+closeM();
+btn.addEventListener("click",function(){
+if(mobile()){if(panel.style.display==="none")openM();else closeM();}
+else{document.body.classList.toggle("sidebar-collapsed");}
+});
+overlay.addEventListener("click",closeM);closeBtn.addEventListener("click",closeM);
+panel.querySelectorAll("a").forEach(function(a){a.addEventListener("click",closeM);});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(mobile())closeM();else document.body.classList.add("sidebar-collapsed");}});
+window.addEventListener("resize",function(){if(!mobile())closeM();});
 })();
 })();
 </script>"""
@@ -147,6 +150,8 @@ for f in html_files:
     html = re.sub(r'href="https://wiki\.giljae\.com/([^"]+)" target="_blank" rel="noopener noreferrer"', r'href="/\1"', html)
     html = html.replace(' style="top:60px"', '')
     html = html.replace('</head>', CSS + '\n</head>', 1)
+    # Show hamburger on desktop too
+    html = html.replace('class="block xl:hidden"><button class="myst-top-nav-menu-button', 'class="block"><button class="myst-top-nav-menu-button')
     html = html.replace('class="myst-primary-sidebar fixed', 'class="myst-primary-sidebar')
     html = html.replace('hidden z-10"', 'z-10"')
     ts = html.find('<div class="myst-toc w-full px-1 dark:text-white">')
