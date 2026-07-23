@@ -51,16 +51,25 @@ html,body{height:auto!important;overflow:visible!important;scroll-padding:0!impo
 @media(min-width:768px){
 body{display:grid!important;grid-template-columns:260px 1fr!important;transition:grid-template-columns .3s}
 body.sidebar-collapsed{grid-template-columns:0 1fr!important}
-.myst-top-nav{position:relative!important;grid-column:1/-1!important}
+.myst-top-nav{position:relative!important;grid-column:1/-1!important;padding:0!important}
+.myst-top-nav-bar{max-width:none!important;padding:8px 16px!important;gap:8px!important}
 .myst-primary-sidebar{position:relative!important;display:block!important;width:260px!important;grid-column:1!important;padding:16px 12px 16px 20px!important;height:auto!important;overflow:visible!important}
 body.sidebar-collapsed .myst-primary-sidebar{overflow:hidden!important;padding:0!important;width:0!important}
 .myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
 body.sidebar-collapsed .myst-primary-sidebar-pointer{display:none!important}
 .myst-primary-sidebar-nav{overflow:visible!important}
 .myst-primary-sidebar-footer{display:none!important}
-main.article-grid{display:block!important;grid-column:2!important;padding:20px 32px!important;margin:0!important;max-width:none!important}
+main.article-grid{display:block!important;grid-column:2!important;padding:24px 32px!important;margin:0!important;max-width:none!important}
+article{max-width:900px!important;font-size:1.05rem!important;line-height:1.7!important}
 footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}
-.myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important}
+.myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important;font-size:.9rem!important}
+.myst-toc a{font-size:.88rem!important;padding:5px 8px!important}
+details.sf{margin:1px 0!important}
+details.sf>summary{font-size:.88rem!important;padding:5px 8px!important}
+details.sf a{padding-left:22px!important;font-size:.85rem!important}
+.myst-home-link{margin-left:0!important}
+.myst-home-link span{font-size:1.05rem!important}
+.myst-fm-block h1{font-size:1.8rem!important}
 }
 /* Mobile */
 @media(max-width:767px){
