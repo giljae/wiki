@@ -67,16 +67,18 @@ body{display:block!important}
 .myst-home-link{margin-left:0!important}
 .myst-home-link span{font-size:.95rem!important}
 .myst-search-bar,.myst-search-text-placeholder,.myst-search-shortcut{display:none!important}
-.myst-primary-sidebar{position:relative!important;display:block!important;width:auto!important;padding:4px 10px!important;height:auto!important;overflow:visible!important}
+/* Sidebar hidden by default, shown via hamburger */
+.myst-primary-sidebar{display:none!important}
+.myst-primary-sidebar.open{display:block!important;position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:1000!important;background:white!important;overflow-y:auto!important;padding:56px 16px 16px!important}
+.dark .myst-primary-sidebar.open{background:#1c1917!important}
 .myst-primary-sidebar-pointer{display:block!important;height:auto!important;overflow:visible!important}
 .myst-primary-sidebar-nav{overflow:visible!important}
 .myst-primary-sidebar-footer{display:none!important}
-/* Top nav links as horizontal scrollable strip */
-.myst-primary-sidebar-topnav{overflow-x:auto!important;white-space:nowrap!important;-webkit-overflow-scrolling:touch!important}
-.myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important;font-size:.82rem!important}
-/* Hide TOC folders on mobile */
-.myst-primary-sidebar-toc{display:none!important}
-/* Main content */
+.myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
+.myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
+details.sf{margin:4px 0}
+details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
+details.sf a{padding-left:28px!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
 .myst-fm-block{margin-bottom:8px!important}
@@ -101,11 +103,19 @@ JS = """<script>
 (function(){
 var k="myst:theme",h=document.documentElement,b=document.querySelector(".myst-theme-button");
 var s=localStorage.getItem(k)||(window.matchMedia("(prefers-color-scheme:light)").matches?"light":"dark");
-h.classList.add(s);b&&b.addEventListener("click",function(){
-var n=h.classList.contains("dark")?"light":"dark";h.classList.remove("dark","light");h.classList.add(n);localStorage.setItem(k,n);});
+h.classList.add(s);
+b&&b.addEventListener("click",function(){var n=h.classList.contains("dark")?"light":"dark";h.classList.remove("dark","light");h.classList.add(n);localStorage.setItem(k,n);});
 new MutationObserver(function(){var d=h.classList.contains("dark");
 document.querySelectorAll(".myst-theme-moon-icon").forEach(function(e){e.style.display=d?"block":"none"});
 document.querySelectorAll(".myst-theme-sun-icon").forEach(function(e){e.style.display=d?"none":"block"});}).observe(h,{attributes:true,attributeFilter:["class"]});
+// Hamburger menu toggle
+(function(){
+var btn=document.querySelector(".myst-top-nav-menu-button");
+var sidebar=document.querySelector(".myst-primary-sidebar");
+if(!btn||!sidebar)return;
+btn.addEventListener("click",function(){sidebar.classList.toggle("open");});
+sidebar.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){sidebar.classList.remove("open");});});
+})();
 })();
 </script>"""
 
@@ -120,6 +130,8 @@ for f in html_files:
     html = re.sub(r'<dialog id="myst-no-css">.*?</dialog>', '', html, flags=re.DOTALL, count=1)
     html = re.sub(r'href="https://wiki\.giljae\.com/([^"]+)" target="_blank" rel="noopener noreferrer"', r'href="/\1"', html)
     html = html.replace(' style="top:60px"', '')
+    html = html.replace('class="myst-primary-sidebar fixed', 'class="myst-primary-sidebar')
+    html = html.replace('hidden z-10"', 'z-10"')
     html = html.replace('</head>', CSS + '\n</head>', 1)
     ts = html.find('<div class="myst-toc w-full px-1 dark:text-white">')
     if ts > 0:
