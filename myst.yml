@@ -18,30 +18,32 @@ project:
       children:
         - file: content/getting-started
         - file: content/plugins
-    - title: AI Agent Architecture
+    - title: AI
       children:
-        - file: content/ai-agent-architecture/architecture-overview
+        - title: AI Agent Architecture
           children:
-            - file: content/ai-agent-architecture/i-model-as-component
-    - title: AI Engineering
-      children:
-        - file: content/ai-engineering/engineering-overview
-        - file: content/ai-engineering/learning-path
-        - file: content/ai-engineering/role/01-role
-        - file: content/ai-engineering/role/02-skills
-        - file: content/ai-engineering/role/03-responsibilities
-        - file: content/ai-engineering/role/04-use-cases
-    - title: AI Agent
-      children:
-        - file: content/ai-agent/chapter1
-    - title: Evals for AI Agents
-      children:
-        - file: content/evals-for-ai-agents/evals-overview
+            - file: content/ai/ai-agent-architecture/architecture-overview
+              children:
+                - file: content/ai/ai-agent-architecture/i-model-as-component
+        - title: AI Engineering
           children:
-            - file: content/evals-for-ai-agents/1-introduction-to-evals
-            - file: content/evals-for-ai-agents/2-human-in-the-loop-evaluation
-            - file: content/evals-for-ai-agents/3-llm-as-a-judge
-            - file: content/evals-for-ai-agents/4-programmatic-rule-evaluations
+            - file: content/ai/ai-engineering/engineering-overview
+            - file: content/ai/ai-engineering/learning-path
+            - file: content/ai/ai-engineering/role/01-role
+            - file: content/ai/ai-engineering/role/02-skills
+            - file: content/ai/ai-engineering/role/03-responsibilities
+            - file: content/ai/ai-engineering/role/04-use-cases
+        - title: AI Agent
+          children:
+            - file: content/ai/ai-agent/chapter1
+        - title: Evals for AI Agents
+          children:
+            - file: content/ai/evals-for-ai-agents/evals-overview
+              children:
+                - file: content/ai/evals-for-ai-agents/1-introduction-to-evals
+                - file: content/ai/evals-for-ai-agents/2-human-in-the-loop-evaluation
+                - file: content/ai/evals-for-ai-agents/3-llm-as-a-judge
+                - file: content/ai/evals-for-ai-agents/4-programmatic-rule-evaluations
     - title: Notes
       children:
         - file: content/notes/notes-overview

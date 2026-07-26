@@ -43,14 +43,16 @@ def get_git_date(filepath: str) -> str:
             return dt.strftime("%Y-%m-%d")
 
         # fallback: 원본 경로 (Gollum 시절) 확인
-        # content/ai-agent-architecture/architecture-overview.md → ai-agent-architecture/Home.md
+        # content/ai/ai-agent-architecture/architecture-overview.md → ai-agent-architecture/Home.md
         orig = rel.replace("content/", "").replace("_generated/", "")
         orig = orig.replace("architecture-overview.md", "Home.md")
         orig = orig.replace("engineering-overview.md", "Home.md")
         orig = orig.replace("evals-overview.md", "Home.md")
         orig = orig.replace("notes-overview.md", "Home.md")
         orig = orig.replace("notes/", "")
-        if orig != rel.replace("content/", "").replace("_generated/", ""):
+        # 파일을 content/ai/ 로 이동한 후, Gollum 시절 경로는 ai/ prefix 없었음
+        orig_legacy = orig.replace("ai/", "", 1) if orig.startswith("ai/") else orig
+        if orig != rel.replace("content/", "").replace("_generated/", "") or orig_legacy != orig:
             result2 = subprocess.run(
                 ["git", "log", "-1", "--format=%ai", "--follow", "--", orig],
                 capture_output=True, text=True, cwd=str(ROOT), timeout=5
@@ -59,6 +61,20 @@ def get_git_date(filepath: str) -> str:
             if date_str2:
                 dt = datetime.strptime(date_str2, "%Y-%m-%d %H:%M:%S %z")
                 return dt.strftime("%Y-%m-%d")
+
+        # Try without ai/ prefix (legacy Gollum paths)
+        if orig_legacy != orig:
+            try:
+                result3 = subprocess.run(
+                    ["git", "log", "-1", "--format=%ai", "--follow", "--", orig_legacy],
+                    capture_output=True, text=True, cwd=str(ROOT), timeout=5
+                )
+                date_str3 = result3.stdout.strip()
+                if date_str3:
+                    dt = datetime.strptime(date_str3, "%Y-%m-%d %H:%M:%S %z")
+                    return dt.strftime("%Y-%m-%d")
+            except Exception:
+                pass
 
         return "1970-01-01"
     except Exception:
@@ -198,16 +214,13 @@ def generate_sitemap():
     ]
 
     # 섹션 순서
-    section_order = ["General", "ai-agent-architecture", "ai-agent", "ai-engineering", "evals-for-ai-agents", "notes"]
+    section_order = ["General", "ai", "notes"]
     for sec in section_order:
         if sec not in sections:
             continue
         display_name = {
             "General": "General",
-            "ai-agent-architecture": "AI Agent Architecture",
-            "ai-agent": "AI Agent",
-            "ai-engineering": "AI Engineering",
-            "evals-for-ai-agents": "Evals for AI Agents",
+            "ai": "AI",
             "notes": "Notes",
         }.get(sec, sec)
 
