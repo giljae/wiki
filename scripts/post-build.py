@@ -75,15 +75,22 @@ footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32
 .myst-toc a{font-size:.88rem!important;padding:5px 8px!important}
 details.sf{margin:0!important}
 details.sf>summary{font-size:.88rem!important;padding:6px 8px!important}
-/* Desktop depth tree */
+/* Desktop depth tree with connection lines */
 .sd-0{padding-left:8px!important;font-weight:600}
-.sd-1{padding-left:32px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
-.sd-2{padding-left:50px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
-.sd-3{padding-left:68px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd-1{padding-left:38px!important}
+.sd-2{padding-left:56px!important}
+.sd-3{padding-left:74px!important}
 .sf-0>summary{padding-left:4px!important;font-weight:700}
-.sf-1>summary{padding-left:28px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
-.sf-2>summary{padding-left:46px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sf-1>summary{padding-left:34px!important}
+.sf-2>summary{padding-left:52px!important}
 .sd{font-size:.85rem!important}
+.sd-0::before,.sd-0::after,.sf-0>summary::after{display:none!important}
+/* Tree branch lines */
+.sd-1::before,.sd-2::before,.sd-3::before{content:""!important;position:absolute!important;left:18px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
+.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;left:16px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
+/* Vertical lines (for items with siblings below) */
+.sd-1:not(:last-child),.sd-2:not(:last-child),.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+.sf-1:not(:last-child),.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
 .myst-home-link{margin-left:0!important}
 .myst-home-link span{font-size:1.05rem!important}
 .myst-fm-block h1{font-size:1.8rem!important}
@@ -109,15 +116,22 @@ body{display:block!important}
 .myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
 .myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
 details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
-/* Mobile depth tree */
+/* Mobile depth tree with connection lines */
 .sd-0{padding-left:8px!important;font-weight:600}
-.sd-1{padding-left:32px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
-.sd-2{padding-left:50px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
-.sd-3{padding-left:68px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd-1{padding-left:38px!important}
+.sd-2{padding-left:56px!important}
+.sd-3{padding-left:74px!important}
 .sf-0>summary{padding-left:4px!important;font-weight:700}
-.sf-1>summary{padding-left:28px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
-.sf-2>summary{padding-left:46px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sf-1>summary{padding-left:34px!important}
+.sf-2>summary{padding-left:52px!important}
 .sd{padding:9px 12px!important;font-size:.9rem!important}
+.sd-0::before,.sd-0::after,.sf-0>summary::after{display:none!important}
+/* Tree branch lines */
+.sd-1::before,.sd-2::before,.sd-3::before{content:""!important;position:absolute!important;left:18px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
+.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;left:16px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
+/* Vertical lines */
+.sd-1:not(:last-child),.sd-2:not(:last-child),.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+.sf-1:not(:last-child),.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
 .myst-fm-block{margin-bottom:8px!important}.myst-fm-block h1{font-size:1.3rem!important}article{font-size:.95rem!important}
@@ -126,18 +140,18 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
 .myst-search-shortcut,.myst-search-shortcut kbd,.myst-search-shortcut div{display:none!important}
 .myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
-/* === Tree sidebar === */
-/* Root group labels (AI, Notes, Getting Started) */
+/* === Tree sidebar with connection lines === */
+/* Root group labels */
 .sf{cursor:pointer;user-select:none;margin:0;position:relative}
 .sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none;position:relative}
 .sf>summary::-webkit-details-marker{display:none}
-.sf>summary::before{content:"\25B6";display:inline-block;margin-right:6px;font-size:.6rem;transition:transform .2s;opacity:.5}
+.sf>summary::before{content:"\25B6";display:inline-block;margin-right:6px;font-size:.6rem;transition:transform .2s;opacity:.5;position:relative;z-index:1}
 .sf[open]>summary::before{transform:rotate(90deg)}
 .sf>summary:hover{background:rgba(0,0,0,.05)}
-/* Root-level group (AI, Notes, Getting Started) - uppercase label */
+/* Root-level group - uppercase label */
 .sf-0>summary{font-size:.85rem;text-transform:uppercase;letter-spacing:.6px;color:#888!important;font-weight:600}
 .dark .sf-0>summary{color:#999!important}
-/* Sub-section headers that are also links (architecture-overview, evals-overview) */
+/* Sub-section headers that are also links */
 .sf>summary>.sd{display:inline!important;padding:0!important;background:none!important;border:none!important;font:inherit!important;color:inherit!important;border-radius:0!important}
 .sf>summary>.sd:hover{background:transparent!important}
 .sf>summary>.sd::before{display:none!important}
@@ -153,9 +167,15 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sd[href$="i-model-as-component"]{background:#e8f4fd!important;color:#1a56db!important;font-weight:600}
 .dark .sd[href$="chapter1"],.dark .sd[href$="architecture-overview"],
 .dark .sd[href$="i-model-as-component"]{background:rgba(26,86,219,.2)!important;color:#60a5fa!important}
-/* Tree lines (left border for all nested items) */
-.sd-1,.sd-2,.sd-3,.sf-1>summary,.sf-2>summary{border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0!important}
-.dark .sd-1,.dark .sd-2,.dark .sd-3,.dark .sf-1>summary,.dark .sf-2>summary{border-left-color:rgba(255,255,255,.1)!important}
+/* Tree connection lines */
+.sd-1,.sd-2,.sd-3,.sf-1,.sf-2{position:relative}
+.sd-1:hover,.sd-2:hover,.sd-3:hover,.sf-1:hover,.sf-2:hover{background:rgba(0,0,0,.06)}
+.dark .sd-1:hover,.dark .sd-2:hover,.dark .sd-3:hover,.dark .sf-1:hover,.dark .sf-2:hover{background:rgba(255,255,255,.08)}
+/* Dark mode tree lines */
+.dark .sd-1::before,.dark .sd-2::before,.dark .sd-3::before,
+.dark .sf-1>summary::after,.dark .sf-2>summary::after{border-top-color:rgba(255,255,255,.15)!important}
+.dark .sd-1:not(:last-child),.dark .sd-2:not(:last-child),.dark .sd-3:not(:last-child),
+.dark .sf-1:not(:last-child),.dark .sf-2:not(:last-child){background-image:linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.15))!important}
 </style>"""
 
 JS = """<script>
