@@ -157,6 +157,8 @@ for f in html_files:
     html = re.sub(r'\n\s*<link rel="modulepreload"[^>]*/>', '', html)
     html = re.sub(r'<dialog id="myst-no-css">.*?</dialog>', '', html, flags=re.DOTALL, count=1)
     html = re.sub(r'href="https://wiki\.giljae\.com/([^"]+)" target="_blank" rel="noopener noreferrer"', r'href="/\1"', html)
+    # Fix missing-slash bug: https://wiki.giljae.compath → /path
+    html = re.sub(r'href="https://wiki\.giljae\.com([^/"][^"]*)"', r'href="/\1"', html)
     html = html.replace(' style="top:60px"', '')
     html = html.replace('</head>', CSS + '\n</head>', 1)
     # Show hamburger on desktop too

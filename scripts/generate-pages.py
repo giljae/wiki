@@ -152,7 +152,7 @@ def generate_recent():
         display_date = p["date"]
         if display_date == "1970-01-01":
             display_date = "—"
-        lines.append(f"- **{display_date}** — [{p['title']}]({p['path']}.md) `{p['section']}`")
+        lines.append(f"- **{display_date}** — [{p['title']}](/{p['path']}.md) `{p['section']}`")
 
     lines.append("")
     (OUTPUT / "recent.md").write_text("\n".join(lines), encoding="utf-8")
@@ -198,13 +198,14 @@ def generate_sitemap():
     ]
 
     # 섹션 순서
-    section_order = ["General", "ai-agent-architecture", "ai-engineering", "evals-for-ai-agents", "notes"]
+    section_order = ["General", "ai-agent-architecture", "ai-agent", "ai-engineering", "evals-for-ai-agents", "notes"]
     for sec in section_order:
         if sec not in sections:
             continue
         display_name = {
             "General": "General",
             "ai-agent-architecture": "AI Agent Architecture",
+            "ai-agent": "AI Agent",
             "ai-engineering": "AI Engineering",
             "evals-for-ai-agents": "Evals for AI Agents",
             "notes": "Notes",
@@ -213,7 +214,7 @@ def generate_sitemap():
         lines.append(f"## {display_name}")
         lines.append("")
         for p in sections[sec]:
-            lines.append(f"- [{p['title']}]({p['path']}.md)")
+            lines.append(f"- [{p['title']}](/{p['path']}.md)")
         lines.append("")
 
     (OUTPUT / "sitemap.md").write_text("\n".join(lines), encoding="utf-8")
@@ -258,7 +259,7 @@ def generate_tags():
         lines.append(f"## {tag}")
         lines.append("")
         for p in pages:
-            lines.append(f"- [{p['title']}]({p['path']}.md)")
+            lines.append(f"- [{p['title']}](/{p['path']}.md)")
         lines.append("")
 
     (OUTPUT / "tags.md").write_text("\n".join(lines), encoding="utf-8")

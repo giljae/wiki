@@ -31,6 +31,9 @@ project:
         - file: content/ai-engineering/role/02-skills
         - file: content/ai-engineering/role/03-responsibilities
         - file: content/ai-engineering/role/04-use-cases
+    - title: AI Agent
+      children:
+        - file: content/ai-agent/chapter1
     - title: Evals for AI Agents
       children:
         - file: content/evals-for-ai-agents/evals-overview
