@@ -72,34 +72,11 @@ main.article-grid{display:block!important;grid-column:2!important;padding:24px 3
 article{max-width:900px!important;font-size:1.05rem!important;line-height:1.7!important}
 footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}
 .myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important;font-size:.9rem!important}
-.myst-toc a{font-size:.88rem!important;padding:5px 8px!important}
+.myst-toc a{font-size:.88rem!important}
 details.sf{margin:0!important}
-details.sf>summary{font-size:.88rem!important;padding:6px 8px!important}
-/* Desktop: depth indentation (18px per level) */
-.sd-0{padding-left:8px!important;font-weight:600}
-.sd-1{padding-left:38px!important}
-.sd-2{padding-left:56px!important}
-.sd-3{padding-left:74px!important}
-.sf-0>summary{padding-left:4px!important;font-weight:700}
-.sf-1>summary{padding-left:34px!important}
-.sf-2>summary{padding-left:52px!important}
-.sd{font-size:.85rem!important}
-/* Hide tree lines on root level */
-.sd-0::before,.sf-0>summary::after{display:none!important}
-/* Tree branch lines: each depth has its own vertical-line X position */
-.sd-1::before{left:19px!important;width:19px!important}
-.sd-2::before{left:37px!important;width:19px!important}
-.sd-3::before{left:55px!important;width:19px!important}
-.sf-1>summary::after{left:19px!important;width:15px!important}
-.sf-2>summary::after{left:37px!important;width:15px!important}
-.sd-1::before,.sd-2::before,.sd-3::before,
-.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;top:50%!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
-/* Vertical lines: depth-specific X positions */
-.sd-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
-.sd-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
-.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 55px 0/2px 100%!important}
-.sf-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
-.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
+details.sf>summary{font-size:.88rem!important;padding:6px 4px!important}
+.sd{font-size:.85rem!important;padding:5px 10px!important}
+details.sf>details.sf::before{top:15px!important}
 .myst-home-link{margin-left:0!important}
 .myst-home-link span{font-size:1.05rem!important}
 .myst-fm-block h1{font-size:1.8rem!important}
@@ -124,32 +101,10 @@ body{display:block!important}
 .myst-primary-sidebar-footer{display:none!important}
 .myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
 .myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
-details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
-/* Mobile: depth indentation (18px per level) */
-.sd-0{padding-left:8px!important;font-weight:600}
-.sd-1{padding-left:38px!important}
-.sd-2{padding-left:56px!important}
-.sd-3{padding-left:74px!important}
-.sf-0>summary{padding-left:4px!important;font-weight:700}
-.sf-1>summary{padding-left:34px!important}
-.sf-2>summary{padding-left:52px!important}
-.sd{padding:9px 12px!important;font-size:.9rem!important}
-/* Hide tree lines on root */
-.sd-0::before,.sf-0>summary::after{display:none!important}
-/* Branch lines: depth-specific positions */
-.sd-1::before{left:19px!important;width:19px!important}
-.sd-2::before{left:37px!important;width:19px!important}
-.sd-3::before{left:55px!important;width:19px!important}
-.sf-1>summary::after{left:19px!important;width:15px!important}
-.sf-2>summary::after{left:37px!important;width:15px!important}
-.sd-1::before,.sd-2::before,.sd-3::before,
-.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;top:50%!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
-/* Vertical lines: depth-specific */
-.sd-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
-.sd-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
-.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 55px 0/2px 100%!important}
-.sf-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
-.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
+details.sf{margin:0!important}
+details.sf>summary{padding:9px 4px!important;font-size:.95rem!important}
+.sd{padding:9px 10px!important;font-size:.9rem!important}
+details.sf>details.sf::before{top:19px!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
 .myst-fm-block{margin-bottom:8px!important}.myst-fm-block h1{font-size:1.3rem!important}article{font-size:.95rem!important}
@@ -158,23 +113,22 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
 .myst-search-shortcut,.myst-search-shortcut kbd,.myst-search-shortcut div{display:none!important}
 .myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
-/* === Tree sidebar with connection lines === */
-/* Root group labels */
+/* === Tree sidebar: section groups === */
 .sf{cursor:pointer;user-select:none;margin:0;position:relative}
-.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none;position:relative}
+.sf>summary{cursor:pointer;padding:6px 4px;border-radius:6px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none;position:relative}
 .sf>summary::-webkit-details-marker{display:none}
-.sf>summary::before{content:"\25B6";display:inline-block;margin-right:6px;font-size:.6rem;transition:transform .2s;opacity:.5;position:relative;z-index:1}
+.sf>summary::before{content:"\\25B6";display:inline-block;margin-right:6px;font-size:.6rem;transition:transform .2s;opacity:.5;position:relative;z-index:1}
 .sf[open]>summary::before{transform:rotate(90deg)}
 .sf>summary:hover{background:rgba(0,0,0,.05)}
-/* Root-level group - uppercase label */
+/* Root group labels: muted uppercase */
 .sf-0>summary{font-size:.85rem;text-transform:uppercase;letter-spacing:.6px;color:#888!important;font-weight:600}
 .dark .sf-0>summary{color:#999!important}
-/* Sub-section headers that are also links */
+/* Section header that is also a page link */
 .sf>summary>.sd{display:inline!important;padding:0!important;background:none!important;border:none!important;font:inherit!important;color:inherit!important;border-radius:0!important}
-.sf>summary>.sd:hover{background:transparent!important}
+.sf>summary>.sd:hover{background:transparent!important;text-decoration:underline}
 .sf>summary>.sd::before{display:none!important}
 /* Page links */
-.sd{display:block;padding:5px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.88rem;transition:all .12s;position:relative}
+.sd{display:block;padding:5px 10px;border-radius:6px;text-decoration:none;color:inherit;font-size:.88rem;transition:background .12s;position:relative}
 .sd:hover{background:rgba(0,0,0,.06)}
 .dark .sd:hover{background:rgba(255,255,255,.08)}
 .dark .sf>summary:hover{background:rgba(255,255,255,.08)}
@@ -185,11 +139,32 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sd[href$="i-model-as-component"]{background:#e8f4fd!important;color:#1a56db!important;font-weight:600}
 .dark .sd[href$="chapter1"],.dark .sd[href$="architecture-overview"],
 .dark .sd[href$="i-model-as-component"]{background:rgba(26,86,219,.2)!important;color:#60a5fa!important}
+/* === TREE CONNECTION LINES (recursive) ===
+   Each direct child of a section (except its summary) gets a vertical
+   border on its left. Stacked siblings form one continuous line; nested
+   sections repeat the rule, producing a column per depth automatically. */
+details.sf>*:not(summary){
+  display:block;
+  border-left:2px solid rgba(0,0,0,.14);
+  margin:0 0 0 12px;
+  padding-left:14px;
+  border-radius:0 6px 6px 0;
+  position:relative;
+}
+/* Horizontal stub from the vertical line to each page link */
+details.sf>a.sd::before{
+  content:"";position:absolute;left:0;top:50%;width:12px;
+  border-top:2px solid rgba(0,0,0,.14);transform:translateY(-50%);
+}
+/* Horizontal stub to each nested section header (aligned with its summary) */
+details.sf>details.sf::before{
+  content:"";position:absolute;left:0;top:15px;width:12px;
+  border-top:2px solid rgba(0,0,0,.14);
+}
 /* Dark mode tree lines */
-.dark .sd-1::before,.dark .sd-2::before,.dark .sd-3::before,
-.dark .sf-1>summary::after,.dark .sf-2>summary::after{border-top-color:rgba(255,255,255,.15)!important}
-.dark .sd-1:not(:last-child),.dark .sd-2:not(:last-child),.dark .sd-3:not(:last-child){background-image:linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.15))!important}
-.dark .sf-1:not(:last-child),.dark .sf-2:not(:last-child){background-image:linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.15))!important}
+.dark details.sf>*:not(summary){border-left-color:rgba(255,255,255,.15)}
+.dark details.sf>a.sd::before,
+.dark details.sf>details.sf::before{border-top-color:rgba(255,255,255,.15)}
 </style>"""
 
 JS = """<script>
