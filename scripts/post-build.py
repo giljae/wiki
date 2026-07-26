@@ -32,12 +32,21 @@ def build_sidebar(items, depth=0):
         title = item.get('title', '')
         fp = item.get('file', '')
         children = item.get('children', [])
-        if fp:
+        if fp and children:
+            # Section header with its own page + sub-pages: summary wraps a link
+            slug = file_to_slug(fp)
+            if not title: title = slug_info.get(slug, slug)
+            if slug in ('home',) or fp == 'content/home': title = "Giljae's Digital Garden"
+            uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]
+            html += f'<details open class="sf sf-{depth}"><summary><a href="/{slug}" class="sd sd-{depth}">{title}</a></summary>\n{build_sidebar(children, depth + 1)}</details>\n'
+        elif fp:
+            # Leaf page (no children)
             slug = file_to_slug(fp)
             if not title: title = slug_info.get(slug, slug)
             if slug in ('home',) or fp == 'content/home': title = "Giljae's Digital Garden"
             html += f'<a href="/{slug}" title="{title}" class="sd sd-{depth}">{title}</a>\n'
-        if children:
+        elif children:
+            # Section group (no file, only children)
             uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]
             html += f'<details open class="sf sf-{depth}"><summary>{title}</summary>\n{build_sidebar(children, depth + 1)}</details>\n'
     return html
@@ -64,16 +73,16 @@ article{max-width:900px!important;font-size:1.05rem!important;line-height:1.7!im
 footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32px!important}
 .myst-primary-sidebar-topnav a{display:inline-block!important;margin:2px 4px!important;padding:4px 8px!important;font-size:.9rem!important}
 .myst-toc a{font-size:.88rem!important;padding:5px 8px!important}
-details.sf{margin:1px 0!important}
-details.sf>summary{font-size:.88rem!important;padding:5px 8px!important}
-/* Depth-based indentation - desktop */
-.sd-0{padding-left:6px!important;font-weight:500}
-.sd-1{padding-left:20px!important}
-.sd-2{padding-left:34px!important}
-.sd-3{padding-left:48px!important}
-.sf-0>summary{padding-left:4px!important}
-.sf-1>summary{padding-left:18px!important}
-.sf-2>summary{padding-left:32px!important}
+details.sf{margin:0!important}
+details.sf>summary{font-size:.88rem!important;padding:6px 8px!important}
+/* Desktop depth tree */
+.sd-0{padding-left:8px!important;font-weight:600}
+.sd-1{padding-left:32px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd-2{padding-left:50px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd-3{padding-left:68px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sf-0>summary{padding-left:4px!important;font-weight:700}
+.sf-1>summary{padding-left:28px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sf-2>summary{padding-left:46px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
 .sd{font-size:.85rem!important}
 .myst-home-link{margin-left:0!important}
 .myst-home-link span{font-size:1.05rem!important}
@@ -100,15 +109,15 @@ body{display:block!important}
 .myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
 .myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
 details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
-/* Depth-based indentation - mobile */
-.sd-0{padding-left:6px!important;font-weight:500}
-.sd-1{padding-left:20px!important}
-.sd-2{padding-left:34px!important}
-.sd-3{padding-left:48px!important}
-.sf-0>summary{padding-left:4px!important}
-.sf-1>summary{padding-left:18px!important}
-.sf-2>summary{padding-left:32px!important}
-.sd{padding:8px 12px!important;font-size:.9rem!important}
+/* Mobile depth tree */
+.sd-0{padding-left:8px!important;font-weight:600}
+.sd-1{padding-left:32px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd-2{padding-left:50px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd-3{padding-left:68px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sf-0>summary{padding-left:4px!important;font-weight:700}
+.sf-1>summary{padding-left:28px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sf-2>summary{padding-left:46px!important;border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0 8px 8px 0!important}
+.sd{padding:9px 12px!important;font-size:.9rem!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
 .myst-fm-block{margin-bottom:8px!important}.myst-fm-block h1{font-size:1.3rem!important}article{font-size:.95rem!important}
@@ -117,18 +126,36 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
 .myst-search-shortcut,.myst-search-shortcut kbd,.myst-search-shortcut div{display:none!important}
 .myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
-/* Sidebar depth hierarchy */
-.sf{cursor:pointer;user-select:none;margin:1px 0}
-.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none}
+/* === Tree sidebar === */
+/* Root group labels (AI, Notes, Getting Started) */
+.sf{cursor:pointer;user-select:none;margin:0;position:relative}
+.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none;position:relative}
 .sf>summary::-webkit-details-marker{display:none}
-.sf>summary::before{content:"\25B6";display:inline-block;margin-right:6px;font-size:.7rem;transition:transform .2s}
+.sf>summary::before{content:"\25B6";display:inline-block;margin-right:6px;font-size:.6rem;transition:transform .2s;opacity:.5}
 .sf[open]>summary::before{transform:rotate(90deg)}
-.sf>summary:hover{background:rgba(0,0,0,.06)}
-.sd{display:block;padding:5px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.88rem;transition:background .15s}
+.sf>summary:hover{background:rgba(0,0,0,.05)}
+/* Root-level group (AI, Notes, Getting Started) - uppercase label */
+.sf-0>summary{font-size:.85rem;text-transform:uppercase;letter-spacing:.6px;color:#888!important;font-weight:600}
+.dark .sf-0>summary{color:#999!important}
+/* Sub-section headers that are also links (architecture-overview, evals-overview) */
+.sf>summary>.sd{display:inline!important;padding:0!important;background:none!important;border:none!important;font:inherit!important;color:inherit!important;border-radius:0!important}
+.sf>summary>.sd:hover{background:transparent!important}
+.sf>summary>.sd::before{display:none!important}
+/* Page links */
+.sd{display:block;padding:5px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.88rem;transition:all .12s;position:relative}
 .sd:hover{background:rgba(0,0,0,.06)}
-.dark .sd:hover{background:rgba(255,255,255,.1)}
-.dark .sf>summary:hover{background:rgba(255,255,255,.1)}
+.dark .sd:hover{background:rgba(255,255,255,.08)}
+.dark .sf>summary:hover{background:rgba(255,255,255,.08)}
 .dark .sf>summary{color:#60a5fa}
+.dark .sd{color:#e0e0e0}
+/* Active page highlight */
+.sd[href$="chapter1"],.sd[href$="architecture-overview"],
+.sd[href$="i-model-as-component"]{background:#e8f4fd!important;color:#1a56db!important;font-weight:600}
+.dark .sd[href$="chapter1"],.dark .sd[href$="architecture-overview"],
+.dark .sd[href$="i-model-as-component"]{background:rgba(26,86,219,.2)!important;color:#60a5fa!important}
+/* Tree lines (left border for all nested items) */
+.sd-1,.sd-2,.sd-3,.sf-1>summary,.sf-2>summary{border-left:2px solid rgba(0,0,0,.08)!important;border-radius:0!important}
+.dark .sd-1,.dark .sd-2,.dark .sd-3,.dark .sf-1>summary,.dark .sf-2>summary{border-left-color:rgba(255,255,255,.1)!important}
 </style>"""
 
 JS = """<script>
