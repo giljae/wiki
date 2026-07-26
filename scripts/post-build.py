@@ -25,7 +25,7 @@ def file_to_slug(fp):
         if c == slug: return slug
     return filename
 
-def build_sidebar(items):
+def build_sidebar(items, depth=0):
     html = ''
     for item in items:
         if not isinstance(item, dict): continue
@@ -36,10 +36,10 @@ def build_sidebar(items):
             slug = file_to_slug(fp)
             if not title: title = slug_info.get(slug, slug)
             if slug in ('home',) or fp == 'content/home': title = "Giljae's Digital Garden"
-            html += f'<a href="/{slug}" title="{title}">{title}</a>\n'
+            html += f'<a href="/{slug}" title="{title}" class="sd sd-{depth}">{title}</a>\n'
         if children:
             uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]
-            html += f'<details open class="sf"><summary>{title}</summary>\n{build_sidebar(children)}</details>\n'
+            html += f'<details open class="sf sf-{depth}"><summary>{title}</summary>\n{build_sidebar(children, depth + 1)}</details>\n'
     return html
 
 sidebar_html = build_sidebar(toc)
@@ -66,7 +66,15 @@ footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32
 .myst-toc a{font-size:.88rem!important;padding:5px 8px!important}
 details.sf{margin:1px 0!important}
 details.sf>summary{font-size:.88rem!important;padding:5px 8px!important}
-details.sf a{padding-left:22px!important;font-size:.85rem!important}
+/* Depth-based indentation - desktop */
+.sd-0{padding-left:6px!important;font-weight:500}
+.sd-1{padding-left:20px!important}
+.sd-2{padding-left:34px!important}
+.sd-3{padding-left:48px!important}
+.sf-0>summary{padding-left:4px!important}
+.sf-1>summary{padding-left:18px!important}
+.sf-2>summary{padding-left:32px!important}
+.sd{font-size:.85rem!important}
 .myst-home-link{margin-left:0!important}
 .myst-home-link span{font-size:1.05rem!important}
 .myst-fm-block h1{font-size:1.8rem!important}
@@ -91,7 +99,16 @@ body{display:block!important}
 .myst-primary-sidebar-footer{display:none!important}
 .myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
 .myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
-details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}details.sf a{padding-left:28px!important}
+details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
+/* Depth-based indentation - mobile */
+.sd-0{padding-left:6px!important;font-weight:500}
+.sd-1{padding-left:20px!important}
+.sd-2{padding-left:34px!important}
+.sd-3{padding-left:48px!important}
+.sf-0>summary{padding-left:4px!important}
+.sf-1>summary{padding-left:18px!important}
+.sf-2>summary{padding-left:32px!important}
+.sd{padding:8px 12px!important;font-size:.9rem!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
 .myst-fm-block{margin-bottom:8px!important}.myst-fm-block h1{font-size:1.3rem!important}article{font-size:.95rem!important}
@@ -100,15 +117,18 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sticky,.fixed{position:relative!important}.hidden{display:revert!important}.translate-y-6{transform:none!important}.opacity-0{opacity:1!important}
 .myst-search-shortcut,.myst-search-shortcut kbd,.myst-search-shortcut div{display:none!important}
 .myst-toc a{display:block;padding:6px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}.myst-toc a:hover{background:rgba(0,0,0,.06)}
-details.sf{margin:2px 0}details.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none}
-details.sf>summary::-webkit-details-marker{display:none}
-details.sf>summary::before{content:"\\25B6";display:inline-block;margin-right:6px;font-size:.7rem;transition:transform .2s}
-details.sf[open]>summary::before{transform:rotate(90deg)}
-details.sf>summary:hover{background:rgba(0,0,0,.06)}
-details.sf a{padding-left:24px!important}
-.dark .myst-toc a:hover{background:rgba(255,255,255,.1)}
-.dark details.sf>summary:hover{background:rgba(255,255,255,.1)}
-.dark details.sf>summary{color:#60a5fa}
+/* Sidebar depth hierarchy */
+.sf{cursor:pointer;user-select:none;margin:1px 0}
+.sf>summary{cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem;color:#1a56db;list-style:none;user-select:none}
+.sf>summary::-webkit-details-marker{display:none}
+.sf>summary::before{content:"\25B6";display:inline-block;margin-right:6px;font-size:.7rem;transition:transform .2s}
+.sf[open]>summary::before{transform:rotate(90deg)}
+.sf>summary:hover{background:rgba(0,0,0,.06)}
+.sd{display:block;padding:5px 8px;border-radius:8px;text-decoration:none;color:inherit;font-size:.88rem;transition:background .15s}
+.sd:hover{background:rgba(0,0,0,.06)}
+.dark .sd:hover{background:rgba(255,255,255,.1)}
+.dark .sf>summary:hover{background:rgba(255,255,255,.1)}
+.dark .sf>summary{color:#60a5fa}
 </style>"""
 
 JS = """<script>
