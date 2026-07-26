@@ -44,11 +44,6 @@ project:
                 - file: content/ai/evals-for-ai-agents/2-human-in-the-loop-evaluation
                 - file: content/ai/evals-for-ai-agents/3-llm-as-a-judge
                 - file: content/ai/evals-for-ai-agents/4-programmatic-rule-evaluations
-    - title: Notes
-      children:
-        - file: content/notes/notes-overview
-          children:
-            - file: content/notes/about
 site:
   template: book-theme
   nav:
