@@ -75,7 +75,7 @@ footer.article.footer{grid-column:2!important;margin:0!important;padding:12px 32
 .myst-toc a{font-size:.88rem!important;padding:5px 8px!important}
 details.sf{margin:0!important}
 details.sf>summary{font-size:.88rem!important;padding:6px 8px!important}
-/* Desktop depth tree with connection lines */
+/* Desktop: depth indentation (18px per level) */
 .sd-0{padding-left:8px!important;font-weight:600}
 .sd-1{padding-left:38px!important}
 .sd-2{padding-left:56px!important}
@@ -84,13 +84,22 @@ details.sf>summary{font-size:.88rem!important;padding:6px 8px!important}
 .sf-1>summary{padding-left:34px!important}
 .sf-2>summary{padding-left:52px!important}
 .sd{font-size:.85rem!important}
-.sd-0::before,.sd-0::after,.sf-0>summary::after{display:none!important}
-/* Tree branch lines */
-.sd-1::before,.sd-2::before,.sd-3::before{content:""!important;position:absolute!important;left:18px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
-.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;left:16px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
-/* Vertical lines (for items with siblings below) */
-.sd-1:not(:last-child),.sd-2:not(:last-child),.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
-.sf-1:not(:last-child),.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+/* Hide tree lines on root level */
+.sd-0::before,.sf-0>summary::after{display:none!important}
+/* Tree branch lines: each depth has its own vertical-line X position */
+.sd-1::before{left:19px!important;width:19px!important}
+.sd-2::before{left:37px!important;width:19px!important}
+.sd-3::before{left:55px!important;width:19px!important}
+.sf-1>summary::after{left:19px!important;width:15px!important}
+.sf-2>summary::after{left:37px!important;width:15px!important}
+.sd-1::before,.sd-2::before,.sd-3::before,
+.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;top:50%!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
+/* Vertical lines: depth-specific X positions */
+.sd-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+.sd-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
+.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 55px 0/2px 100%!important}
+.sf-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
 .myst-home-link{margin-left:0!important}
 .myst-home-link span{font-size:1.05rem!important}
 .myst-fm-block h1{font-size:1.8rem!important}
@@ -116,7 +125,7 @@ body{display:block!important}
 .myst-primary-sidebar-topnav a{display:block!important;margin:6px 0!important;padding:8px 12px!important;font-size:.95rem!important}
 .myst-toc a{display:block;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-size:.9rem}
 details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:.95rem!important}
-/* Mobile depth tree with connection lines */
+/* Mobile: depth indentation (18px per level) */
 .sd-0{padding-left:8px!important;font-weight:600}
 .sd-1{padding-left:38px!important}
 .sd-2{padding-left:56px!important}
@@ -125,13 +134,22 @@ details.sf{margin:4px 0}details.sf>summary{padding:8px 12px!important;font-size:
 .sf-1>summary{padding-left:34px!important}
 .sf-2>summary{padding-left:52px!important}
 .sd{padding:9px 12px!important;font-size:.9rem!important}
-.sd-0::before,.sd-0::after,.sf-0>summary::after{display:none!important}
-/* Tree branch lines */
-.sd-1::before,.sd-2::before,.sd-3::before{content:""!important;position:absolute!important;left:18px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
-.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;left:16px!important;top:50%!important;width:14px!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
-/* Vertical lines */
-.sd-1:not(:last-child),.sd-2:not(:last-child),.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
-.sf-1:not(:last-child),.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+/* Hide tree lines on root */
+.sd-0::before,.sf-0>summary::after{display:none!important}
+/* Branch lines: depth-specific positions */
+.sd-1::before{left:19px!important;width:19px!important}
+.sd-2::before{left:37px!important;width:19px!important}
+.sd-3::before{left:55px!important;width:19px!important}
+.sf-1>summary::after{left:19px!important;width:15px!important}
+.sf-2>summary::after{left:37px!important;width:15px!important}
+.sd-1::before,.sd-2::before,.sd-3::before,
+.sf-1>summary::after,.sf-2>summary::after{content:""!important;position:absolute!important;top:50%!important;height:0!important;border-top:2px solid rgba(0,0,0,.12)!important;display:block!important;pointer-events:none!important;transform:translateY(-50%)!important}
+/* Vertical lines: depth-specific */
+.sd-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+.sd-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
+.sd-3:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 55px 0/2px 100%!important}
+.sf-1:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 19px 0/2px 100%!important}
+.sf-2:not(:last-child){background:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)) no-repeat 37px 0/2px 100%!important}
 main.article-grid{display:block!important;padding:12px 16px!important;margin:0!important;max-width:none!important}
 footer.article.footer{display:block!important;padding:12px 16px!important;margin:0!important}
 .myst-fm-block{margin-bottom:8px!important}.myst-fm-block h1{font-size:1.3rem!important}article{font-size:.95rem!important}
@@ -167,14 +185,10 @@ footer.article.footer{display:block!important;padding:12px 16px!important;margin
 .sd[href$="i-model-as-component"]{background:#e8f4fd!important;color:#1a56db!important;font-weight:600}
 .dark .sd[href$="chapter1"],.dark .sd[href$="architecture-overview"],
 .dark .sd[href$="i-model-as-component"]{background:rgba(26,86,219,.2)!important;color:#60a5fa!important}
-/* Tree connection lines */
-.sd-1,.sd-2,.sd-3,.sf-1,.sf-2{position:relative}
-.sd-1:hover,.sd-2:hover,.sd-3:hover,.sf-1:hover,.sf-2:hover{background:rgba(0,0,0,.06)}
-.dark .sd-1:hover,.dark .sd-2:hover,.dark .sd-3:hover,.dark .sf-1:hover,.dark .sf-2:hover{background:rgba(255,255,255,.08)}
 /* Dark mode tree lines */
 .dark .sd-1::before,.dark .sd-2::before,.dark .sd-3::before,
 .dark .sf-1>summary::after,.dark .sf-2>summary::after{border-top-color:rgba(255,255,255,.15)!important}
-.dark .sd-1:not(:last-child),.dark .sd-2:not(:last-child),.dark .sd-3:not(:last-child),
+.dark .sd-1:not(:last-child),.dark .sd-2:not(:last-child),.dark .sd-3:not(:last-child){background-image:linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.15))!important}
 .dark .sf-1:not(:last-child),.dark .sf-2:not(:last-child){background-image:linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.15))!important}
 </style>"""
 
