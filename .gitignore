@@ -8,4 +8,9 @@ _build/
 
 # MyST build outputs
 _build
-content/_generated/
+_generated/
+
+# Auto-generated pages (created during build)
+recent.md
+sitemap.md
+tags.md

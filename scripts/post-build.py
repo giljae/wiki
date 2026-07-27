@@ -14,16 +14,37 @@ slug_info = {p['slug']: p.get('title', p['slug']) for p in pages if p.get('slug'
 
 def file_to_slug(fp):
     if not fp: return None
-    name = fp.replace('content/', '').replace('.md', '')
-    filename = name.split('/')[-1]
+    # MyST uses dot-separated slugs when folders: true is enabled.
+    # Each path segment has leading numbers stripped, e.g. 1-introduction -> introduction.
+    name = fp.replace('.md', '')
+    parts = name.split('/')
+    normalized_parts = [re.sub(r'^\d+-', '', p) for p in parts]
+    normalized_name = '.'.join(normalized_parts)
+    if normalized_name in slug_info:
+        return normalized_name
+    # Fallback: exact match without normalizing
+    name_dotted = name.replace('/', '.')
+    if name_dotted in slug_info:
+        return name_dotted
+    # Filename-only fallback
+    filename = normalized_parts[-1]
     for slug in slug_info:
-        if filename == slug or slug in filename or filename.endswith(slug):
+        if filename == slug or slug in normalized_name or normalized_name.endswith(slug):
             return slug
     c = re.sub(r'^\d+-', '', filename)
     if c in slug_info: return c
     for slug in slug_info:
         if c == slug: return slug
-    return filename
+    return normalized_name
+
+def slug_to_url(slug):
+    if slug == 'index':
+        return '/'
+    parts = slug.split('.')
+    if parts[-1] == 'index':
+        parts = parts[:-1]
+    return '/' + '/'.join(parts)
+
 
 def build_sidebar(items, depth=0):
     html = ''
@@ -36,16 +57,16 @@ def build_sidebar(items, depth=0):
             # Section header with its own page + sub-pages: summary wraps a link
             slug = file_to_slug(fp)
             if not title: title = slug_info.get(slug, slug)
-            if slug in ('index',) or fp == 'content/index': title = "Giljae's Digital Garden"
-            url = '/' if slug == 'index' else f'/{slug}'
+            if slug in ('index',) or fp == 'index': title = "Giljae's Digital Garden"
+            url = slug_to_url(slug)
             uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]
             html += f'<details open class="sf sf-{depth}"><summary><a href="{url}" class="sd sd-{depth}">{title}</a></summary>\n{build_sidebar(children, depth + 1)}</details>\n'
         elif fp:
             # Leaf page (no children)
             slug = file_to_slug(fp)
             if not title: title = slug_info.get(slug, slug)
-            if slug in ('index',) or fp == 'content/index': title = "Giljae's Digital Garden"
-            url = '/' if slug == 'index' else f'/{slug}'
+            if slug in ('index',) or fp == 'index': title = "Giljae's Digital Garden"
+            url = slug_to_url(slug)
             html += f'<a href="{url}" title="{title}" class="sd sd-{depth}">{title}</a>\n'
         elif children:
             # Section group (no file, only children)

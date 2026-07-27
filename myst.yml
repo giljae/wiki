@@ -10,40 +10,40 @@ project:
       url: https://giljae.com
   github: https://github.com/giljae/wiki
   toc:
-    - file: content/index
-    - file: content/_generated/recent
-    - file: content/_generated/sitemap
-    - file: content/_generated/tags
+    - file: index
+    - file: recent
+    - file: sitemap
+    - file: tags
     - title: Getting Started
       children:
-        - file: content/getting-started
-        - file: content/plugins
+        - file: getting-started
+        - file: plugins
     - title: AI
       children:
         - title: AI Agent Architecture
           children:
-            - file: content/ai/ai-agent-architecture/architecture-overview
+            - file: ai/ai-agent-architecture/architecture-overview
               children:
-                - file: content/ai/ai-agent-architecture/i-model-as-component
+                - file: ai/ai-agent-architecture/i-model-as-component
         - title: AI Engineering
           children:
-            - file: content/ai/ai-engineering/engineering-overview
-            - file: content/ai/ai-engineering/learning-path
-            - file: content/ai/ai-engineering/role/01-role
-            - file: content/ai/ai-engineering/role/02-skills
-            - file: content/ai/ai-engineering/role/03-responsibilities
-            - file: content/ai/ai-engineering/role/04-use-cases
+            - file: ai/ai-engineering/engineering-overview
+            - file: ai/ai-engineering/learning-path
+            - file: ai/ai-engineering/role/index
+            - file: ai/ai-engineering/role/skills
+            - file: ai/ai-engineering/role/responsibilities
+            - file: ai/ai-engineering/role/use-cases
         - title: AI Agent
           children:
-            - file: content/ai/ai-agent/chapter1
+            - file: ai/ai-agent/chapter1
         - title: Evals for AI Agents
           children:
-            - file: content/ai/evals-for-ai-agents/evals-overview
+            - file: ai/evals-for-ai-agents/evals-overview
               children:
-                - file: content/ai/evals-for-ai-agents/1-introduction-to-evals
-                - file: content/ai/evals-for-ai-agents/2-human-in-the-loop-evaluation
-                - file: content/ai/evals-for-ai-agents/3-llm-as-a-judge
-                - file: content/ai/evals-for-ai-agents/4-programmatic-rule-evaluations
+                - file: ai/evals-for-ai-agents/1-introduction-to-evals
+                - file: ai/evals-for-ai-agents/2-human-in-the-loop-evaluation
+                - file: ai/evals-for-ai-agents/3-llm-as-a-judge
+                - file: ai/evals-for-ai-agents/4-programmatic-rule-evaluations
 site:
   template: book-theme
   nav:
@@ -56,6 +56,7 @@ site:
     - title: Tags
       url: /tags
   options:
+    folders: true
     favicon: assets/favicon.svg
     logo: assets/favicon.svg
     logo_text: "Giljae's Digital Garden"

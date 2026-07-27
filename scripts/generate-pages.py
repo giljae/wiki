@@ -2,7 +2,7 @@
 """
 Jupyter Book 자동 생성 페이지: Recent, Index, Tags
 
-빌드 시점에 실행되어 content/_generated/ 디렉토리에
+빌드 시점에 실행되어 프로젝트 루트에
 최신 상태의 페이지를 생성합니다.
 """
 
@@ -14,8 +14,8 @@ from pathlib import Path
 from datetime import datetime
 
 ROOT = Path(__file__).resolve().parent.parent
-CONTENT = ROOT / "content"
-OUTPUT = CONTENT / "_generated"
+CONTENT = ROOT
+OUTPUT = ROOT
 OUTPUT.mkdir(parents=True, exist_ok=True)
 
 # 제외할 파일들
@@ -25,6 +25,9 @@ EXCLUDE = {
     "getting-started.md",
     "plugins.md",
     "README.md",
+    "recent.md",
+    "sitemap.md",
+    "tags.md",
 }
 
 
@@ -43,16 +46,16 @@ def get_git_date(filepath: str) -> str:
             return dt.strftime("%Y-%m-%d")
 
         # fallback: 원본 경로 (Gollum 시절) 확인
-        # content/ai/ai-agent-architecture/architecture-overview.md → ai-agent-architecture/Home.md
-        orig = rel.replace("content/", "").replace("_generated/", "")
+        # ai/ai-agent-architecture/architecture-overview.md → ai-agent-architecture/Home.md
+        orig = rel.replace("_generated/", "")
         orig = orig.replace("architecture-overview.md", "Home.md")
         orig = orig.replace("engineering-overview.md", "Home.md")
         orig = orig.replace("evals-overview.md", "Home.md")
         orig = orig.replace("notes-overview.md", "Home.md")
         orig = orig.replace("notes/", "")
-        # 파일을 content/ai/ 로 이동한 후, Gollum 시절 경로는 ai/ prefix 없었음
+        # Gollum 시절 경로는 ai/ prefix 없었음
         orig_legacy = orig.replace("ai/", "", 1) if orig.startswith("ai/") else orig
-        if orig != rel.replace("content/", "").replace("_generated/", "") or orig_legacy != orig:
+        if orig != rel.replace("_generated/", "") or orig_legacy != orig:
             result2 = subprocess.run(
                 ["git", "log", "-1", "--format=%ai", "--follow", "--", orig],
                 capture_output=True, text=True, cwd=str(ROOT), timeout=5
@@ -142,7 +145,7 @@ def generate_recent():
     """Recent 페이지 생성 — Git 최근 수정일 순"""
     pages = []
     for f in sorted(CONTENT.rglob("*.md")):
-        if f.name in EXCLUDE or "_generated" in str(f):
+        if f.name in EXCLUDE or "_generated" in str(f) or "_build" in str(f) or ".git" in str(f):
             continue
         rel = os.path.relpath(f, str(CONTENT))
         content = f.read_text(encoding="utf-8")
@@ -164,6 +167,7 @@ def generate_recent():
         "---",
         "tags: [wiki, recent]",
         "description: 최근 변경된 문서 목록",
+        "slug: recent",
         "---",
         "",
         "# Recent Changes",
@@ -179,7 +183,7 @@ def generate_recent():
 
     lines.append("")
     (OUTPUT / "recent.md").write_text("\n".join(lines), encoding="utf-8")
-    print(f"  ✅ _generated/recent.md ({len(pages)} pages)")
+    print(f"  ✅ recent.md ({len(pages)} pages)")
 
 
 def generate_sitemap():
@@ -187,7 +191,7 @@ def generate_sitemap():
     """Index 페이지 생성 — 섹션별 전체 목차"""
     pages = []
     for f in sorted(CONTENT.rglob("*.md")):
-        if f.name in EXCLUDE or "_generated" in str(f):
+        if f.name in EXCLUDE or "_generated" in str(f) or "_build" in str(f) or ".git" in str(f):
             continue
         rel = os.path.relpath(f, str(CONTENT))
         content = f.read_text(encoding="utf-8")
@@ -212,6 +216,7 @@ def generate_sitemap():
         "---",
         "tags: [wiki, index]",
         "description: 전체 문서 목차",
+        "slug: sitemap",
         "---",
         "",
         "# Index",
@@ -238,14 +243,14 @@ def generate_sitemap():
         lines.append("")
 
     (OUTPUT / "sitemap.md").write_text("\n".join(lines), encoding="utf-8")
-    print(f"  ✅ _generated/sitemap.md ({len(pages)} pages)")
+    print(f"  ✅ sitemap.md ({len(pages)} pages)")
 
 
 def generate_tags():
     """Tags 페이지 생성 — 태그별 문서 목록"""
     tag_map = {}
     for f in sorted(CONTENT.rglob("*.md")):
-        if f.name in EXCLUDE or "_generated" in str(f):
+        if f.name in EXCLUDE or "_generated" in str(f) or "_build" in str(f) or ".git" in str(f):
             continue
         rel = os.path.relpath(f, str(CONTENT))
         content = f.read_text(encoding="utf-8")
@@ -266,6 +271,7 @@ def generate_tags():
         "---",
         "tags: [wiki, tags]",
         "description: 태그별 문서 모음",
+        "slug: tags",
         "---",
         "",
         "# Tags",
@@ -283,7 +289,7 @@ def generate_tags():
         lines.append("")
 
     (OUTPUT / "tags.md").write_text("\n".join(lines), encoding="utf-8")
-    print(f"  ✅ _generated/tags.md ({len(tag_map)} tags)")
+    print(f"  ✅ tags.md ({len(tag_map)} tags)")
 
 
 def main():
