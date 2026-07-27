@@ -10,7 +10,7 @@ project:
       url: https://giljae.com
   github: https://github.com/giljae/wiki
   toc:
-    - file: content/home
+    - file: content/index
     - file: content/_generated/recent
     - file: content/_generated/sitemap
     - file: content/_generated/tags

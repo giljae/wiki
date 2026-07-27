@@ -36,15 +36,17 @@ def build_sidebar(items, depth=0):
             # Section header with its own page + sub-pages: summary wraps a link
             slug = file_to_slug(fp)
             if not title: title = slug_info.get(slug, slug)
-            if slug in ('home',) or fp == 'content/home': title = "Giljae's Digital Garden"
+            if slug in ('index',) or fp == 'content/index': title = "Giljae's Digital Garden"
+            url = '/' if slug == 'index' else f'/{slug}'
             uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]
-            html += f'<details open class="sf sf-{depth}"><summary><a href="/{slug}" class="sd sd-{depth}">{title}</a></summary>\n{build_sidebar(children, depth + 1)}</details>\n'
+            html += f'<details open class="sf sf-{depth}"><summary><a href="{url}" class="sd sd-{depth}">{title}</a></summary>\n{build_sidebar(children, depth + 1)}</details>\n'
         elif fp:
             # Leaf page (no children)
             slug = file_to_slug(fp)
             if not title: title = slug_info.get(slug, slug)
-            if slug in ('home',) or fp == 'content/home': title = "Giljae's Digital Garden"
-            html += f'<a href="/{slug}" title="{title}" class="sd sd-{depth}">{title}</a>\n'
+            if slug in ('index',) or fp == 'content/index': title = "Giljae's Digital Garden"
+            url = '/' if slug == 'index' else f'/{slug}'
+            html += f'<a href="{url}" title="{title}" class="sd sd-{depth}">{title}</a>\n'
         elif children:
             # Section group (no file, only children)
             uid = hashlib.md5((title or str(item)).encode()).hexdigest()[:6]

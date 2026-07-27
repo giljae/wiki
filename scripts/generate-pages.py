@@ -131,6 +131,13 @@ def slugify(text: str) -> str:
     return slug.strip('-')
 
 
+def page_url(path: str) -> str:
+    """페이지 경로를 남부 링크 URL로 변환. 루트 홈 페이지는 '/'"""
+    if path == "index":
+        return "/"
+    return f"/{path}.md"
+
+
 def generate_recent():
     """Recent 페이지 생성 — Git 최근 수정일 순"""
     pages = []
@@ -227,7 +234,7 @@ def generate_sitemap():
         lines.append(f"## {display_name}")
         lines.append("")
         for p in sections[sec]:
-            lines.append(f"- [{p['title']}](/{p['path']}.md)")
+            lines.append(f"- [{p['title']}]({page_url(p['path'])})")
         lines.append("")
 
     (OUTPUT / "sitemap.md").write_text("\n".join(lines), encoding="utf-8")
@@ -272,7 +279,7 @@ def generate_tags():
         lines.append(f"## {tag}")
         lines.append("")
         for p in pages:
-            lines.append(f"- [{p['title']}](/{p['path']}.md)")
+            lines.append(f"- [{p['title']}]({page_url(p['path'])})")
         lines.append("")
 
     (OUTPUT / "tags.md").write_text("\n".join(lines), encoding="utf-8")
