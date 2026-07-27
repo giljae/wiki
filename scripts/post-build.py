@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Post-build: strip React, inject static sidebar + vanilla JS, responsive layout."""
-import glob, re, sys, json, hashlib
+import glob, re, sys, json, hashlib, os
 
 build_dir = sys.argv[1] if len(sys.argv) > 1 else '_build/html'
 html_files = glob.glob(f'{build_dir}/**/index.html', recursive=True)
@@ -76,6 +76,118 @@ def build_sidebar(items, depth=0):
 
 sidebar_html = build_sidebar(toc)
 print(f'{len(slug_info)} pages, {sidebar_html.count("href=")} sidebar items')
+
+# Build ordered slug list from TOC (respects user-defined order)
+def flatten_toc(items):
+    result = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if 'file' in item:
+            result.append(item['file'])
+        if 'children' in item:
+            result.extend(flatten_toc(item['children']))
+    return result
+
+toc_order = [s for s in [file_to_slug(fp) for fp in flatten_toc(toc)] if s]
+
+def get_folder_prefix(slug):
+    if not slug:
+        return ''
+    parts = slug.split('.')
+    if len(parts) <= 1:
+        return ''
+    return '.'.join(parts[:-1])
+
+def html_file_to_url(filepath):
+    rel = os.path.relpath(filepath, build_dir).replace('\\', '/')
+    rel = rel.replace('index.html', '').rstrip('/')
+    if not rel:
+        return '/'
+    return '/' + rel
+
+slug_to_url_map = {slug: slug_to_url(slug) for slug in slug_info}
+
+def html_file_to_slug(filepath):
+    url = html_file_to_url(filepath)
+    for slug, slug_url in slug_to_url_map.items():
+        if slug_url == url:
+            return slug
+    return None
+
+def replace_footer_links(html, current_slug):
+    if not current_slug:
+        return html
+    prefix = get_folder_prefix(current_slug)
+    siblings = [s for s in toc_order if get_folder_prefix(s) == prefix]
+    if current_slug not in siblings:
+        return html
+    idx = siblings.index(current_slug)
+    prev_slug = siblings[idx - 1] if idx > 0 else None
+    next_slug = siblings[idx + 1] if idx < len(siblings) - 1 else None
+    print(f'{current_slug} prev={prev_slug} next={next_slug}', flush=True)
+
+    # Find footer div by depth counting (nested divs inside anchors make simple regex fail)
+    footer_start = html.find('<div class="myst-footer-links')
+    if footer_start < 0:
+        return html
+    depth = 0
+    pos = footer_start
+    footer_end = -1
+    while pos < len(html):
+        next_open = html.find('<div', pos)
+        next_close = html.find('</div>', pos)
+        if next_open == -1 and next_close == -1:
+            break
+        if next_open == -1: next_open = float('inf')
+        if next_close == -1: next_close = float('inf')
+        if next_open < next_close:
+            pos = next_open + 1
+            depth += 1
+        else:
+            pos = next_close + 1
+            depth -= 1
+            if depth == 0:
+                footer_end = next_close + len('</div>')
+                break
+    if footer_end < 0:
+        return html
+    footer_inner = html[footer_start:footer_end]
+
+    # Extract/replace prev/next anchors
+    new_parts = [html[:footer_start]]
+    has_links = False
+    if prev_slug:
+        prev_title = slug_info.get(prev_slug, prev_slug)
+        prev_url = 'https://wiki.giljae.com' + slug_to_url(prev_slug)
+        prev_match = re.search(r'<a\b[^>]*myst-footer-link-prev.*?</a>', footer_inner, re.DOTALL)
+        if prev_match:
+            has_links = True
+            h = prev_match.group(0)
+            h = re.sub(r'href="[^"]*"', f'href="{prev_url}"', h, count=1)
+            h = re.sub(r'aria-label="[^"]*"', f'aria-label="Previous: {prev_title}"', h, count=1)
+            h = re.sub(r'<div class="myst-footer-link-group[^"]*">.*?</div>', f'<div class="myst-footer-link-group text-xs text-gray-500 dark:text-gray-400">{prev_title}</div>', h, count=1)
+            new_parts.append(h)
+    if next_slug:
+        next_title = slug_info.get(next_slug, next_slug)
+        next_url = 'https://wiki.giljae.com' + slug_to_url(next_slug)
+        next_match = re.search(r'<a\b[^>]*myst-footer-link-next.*?</a>', footer_inner, re.DOTALL)
+        if next_match:
+            has_links = True
+            h = next_match.group(0)
+            h = re.sub(r'href="[^"]*"', f'href="{next_url}"', h, count=1)
+            h = re.sub(r'aria-label="[^"]*"', f'aria-label="Next: {next_title}"', h, count=1)
+            h = re.sub(r'<div class="myst-footer-link-group[^"]*">.*?</div>', f'<div class="myst-footer-link-group text-xs text-gray-500 dark:text-gray-400">{next_title}</div>', h, count=1)
+            new_parts.append(h)
+    if not has_links:
+        # No siblings or single page in folder: remove footer div entirely
+        html = html[:footer_start] + html[footer_end:]
+    else:
+        # Rebuild footer: keep the outer div wrapper
+        start_tag_match = re.match(r'(<div class="myst-footer-links[^"]*">)', footer_inner)
+        start_tag = start_tag_match.group(1) if start_tag_match else ''
+        html = html[:footer_start] + start_tag + ''.join(new_parts[1:]) + '</div>' + html[footer_end:]
+    return html
 
 CSS = """<style>
 html,body{height:auto!important;overflow:visible!important;scroll-padding:0!important}
@@ -231,6 +343,9 @@ for f in html_files:
     with open(f) as fp:
         html = fp.read()
     if '<!--PB-->' in html: continue
+    # Replace footer links first, while the original MyST footer is still present
+    current_slug = html_file_to_slug(f)
+    html = replace_footer_links(html, current_slug)
     html = re.sub(r'<script type="module" async="">.*?</script>', '', html, flags=re.DOTALL, count=1)
     html = re.sub(r'<script>window\.__remixContext\s*=.*?</script>', '', html, flags=re.DOTALL, count=1)
     html = re.sub(r'\n\s*<link rel="modulepreload"[^>]*/>', '', html)
